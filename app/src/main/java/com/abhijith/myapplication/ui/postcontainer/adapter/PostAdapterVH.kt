@@ -96,34 +96,13 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
                 }
             }
         }
-
-        override fun wantsToAttach(): Boolean {
-            return true
-        }
-
-        override fun getAttachOrder(): Int {
-            TODO()
-        }
-
-        override fun getAttachView(): View {
-            TODO()
-        }
     }
 
 }
 
 
 interface ViewHolderExtension {
-
     fun action(extensionInfo: ExtensionInfo) {}
-
-    fun getPosition(): Int
-
-    fun wantsToAttach(): Boolean
-
-    fun getAttachOrder(): Int
-
-    fun getAttachView(): View
 }
 
 data class ExtensionInfo(var action: SelectiveAction = SelectiveAction.NONE)

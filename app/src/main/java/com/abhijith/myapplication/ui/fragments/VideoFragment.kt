@@ -1,8 +1,7 @@
-package com.abhijith.myapplication.fragments
+package com.abhijith.myapplication.ui.fragments
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
