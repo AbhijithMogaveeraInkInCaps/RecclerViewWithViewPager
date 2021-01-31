@@ -59,7 +59,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
         var myPosition:Int=-2;
         var mList:List<PostAdapterRV.PostViewHolder> = listOf()
         val vp: ViewPager2 = v.findViewById(R.id.vp_post_media)
-        val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvUserName)
+        val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
         val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
         init {
 
