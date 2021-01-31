@@ -11,8 +11,12 @@ import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterVP
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
+import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 
-class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerView.Adapter<PostAdapterRV.PostViewHolder>() {
+
+class PostAdapterRV(private val fragmentActivity: FragmentActivity)
+    : RecyclerView.Adapter<PostAdapterRV.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(LayoutInflater
@@ -21,16 +25,15 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
     }
 
     private lateinit var intLastClickViewHolder:PostViewHolder
+
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.myPosition = position
-        if(position==0){
-            holder.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
-            intLastClickViewHolder = holder
-        }
         holder.also {VH->
             VH.vp.apply {
                 adapter = PostContentAdapterVP(fragmentActivity)
             }
+            VH.dotsIndicator.setViewPager2(VH.vp)
+
         }
     }
 
@@ -52,15 +55,14 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
         return 20
     }
 
-
-
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
 
         var myPosition:Int=-2;
         var mList:List<PostAdapterRV.PostViewHolder> = listOf()
         val vp: ViewPager2 = v.findViewById(R.id.vp_post_media)
-        val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
-        val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
+        private val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
+        private val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
+        val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
         init {
 
         }
@@ -99,7 +101,6 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
     }
 
 }
-
 
 interface ViewHolderExtension {
     fun action(extensionInfo: ExtensionInfo) {}

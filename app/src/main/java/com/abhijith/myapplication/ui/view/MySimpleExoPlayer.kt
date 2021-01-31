@@ -86,7 +86,6 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
             }
 
         })
-
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -96,7 +95,7 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun start() {
+    fun play() {
         simpleExoPlayer.playWhenReady = true
         simpleExoPlayer.playbackState
     }

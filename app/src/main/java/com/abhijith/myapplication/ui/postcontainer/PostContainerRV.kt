@@ -2,7 +2,6 @@ package com.abhijith.myapplication.ui.postcontainer
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,29 +66,30 @@ class PostContainerRV : RecyclerView {
         super.onScrollStateChanged(state)
 
         val visibleItemPosition: Int = if (!isScrolledDown) {
-            (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+            (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         } else {
             (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         }
 
-        when (state) {
+        if (visibleItemPosition != -1)
+            when (state) {
 
-            SCROLL_STATE_IDLE -> {
-                listOfAttachedCandidates.forEachIndexed { index, postViewHolder ->
-                    (postViewHolder as ViewHolderExtension).apply {
-                        action(
-                            if (postViewHolder.myPosition == visibleItemPosition)
-                                ExtensionInfo(SelectiveAction.ATTACHED_WIN)
-                            else
-                                ExtensionInfo(SelectiveAction.ATTACHED_LOST)
-                        )
+                SCROLL_STATE_IDLE -> {
+                    listOfAttachedCandidates.forEach { postViewHolder ->
+                        (postViewHolder as ViewHolderExtension).apply {
+                            action(
+                                if (postViewHolder.myPosition == visibleItemPosition)
+                                    ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                                else
+                                    ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+                            )
+                        }
                     }
                 }
+                SCROLL_STATE_DRAGGING -> {
+                }
+                SCROLL_STATE_SETTLING -> {
+                }
             }
-            SCROLL_STATE_DRAGGING -> {
-            }
-            SCROLL_STATE_SETTLING -> {
-            }
-        }
     }
 }

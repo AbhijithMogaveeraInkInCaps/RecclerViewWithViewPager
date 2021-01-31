@@ -56,14 +56,14 @@ class VideoFragment : Fragment() {
     }
 
     fun abortAllOperation(){
-        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
+        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer)?.apply {
             pause()
         }
     }
 
     fun resumeAllOperation(){
-        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
-            start()
+        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer)?.apply {
+            play()
         }
     }
 }
