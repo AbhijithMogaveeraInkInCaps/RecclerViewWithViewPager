@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.abhijith.myapplication.ui.PlayOperations
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ExtractorsFactory
@@ -42,7 +43,7 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
         val mediaSource = ExtractorMediaSource(uri, factory, extectorFactory, null, null)
         player = simpleExoPlayer
         keepScreenOn = true
-        simpleExoPlayer.playWhenReady = true
+        simpleExoPlayer.playWhenReady = false
         simpleExoPlayer.prepare(mediaSource)
         simpleExoPlayer.addListener(object : Player.EventListener {
             override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
@@ -90,12 +91,14 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
+        PlayOperations.removeSelf(this)
         simpleExoPlayer.playWhenReady = false
         simpleExoPlayer.playbackState
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun play() {
+        PlayOperations.pauseOther(this)
         simpleExoPlayer.playWhenReady = true
         simpleExoPlayer.playbackState
     }
