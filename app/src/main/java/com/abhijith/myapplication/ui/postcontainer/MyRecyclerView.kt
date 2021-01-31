@@ -44,6 +44,7 @@ class MyRecyclerView : RecyclerView {
                 (VH as ViewHolderExtension).also { VHE ->
                     VHE.action(ExtensionInfo(SelectiveAction.ATTACHED_CANDIDATE))
                     listOfAttachedCandidates.add(VH)
+                    VH.mList = listOfAttachedCandidates
                 }
             }
         }
@@ -58,6 +59,7 @@ class MyRecyclerView : RecyclerView {
                 (VH as ViewHolderExtension).also { VHE ->
                     VHE.action(ExtensionInfo(SelectiveAction.DETACHED))
                     listOfAttachedCandidates.remove(VH)
+                    VH.mList = listOf()
                 }
             }
         }
@@ -72,7 +74,21 @@ class MyRecyclerView : RecyclerView {
         super.onScrollStateChanged(state)
         when (state) {
             SCROLL_STATE_IDLE -> {
-                val luckyWinner = ceil((listOfAttachedCandidates.size / 2.0)).toInt()
+//                val luckyWinner = ceil((listOfAttachedCandidates.size / 2.0)).toInt()
+                val luckyWinner = when {
+                    listOfAttachedCandidates.size > 3 -> {
+                        ceil((listOfAttachedCandidates.size / 2.0)).toInt()
+                    }
+                    listOfAttachedCandidates.size == 1 -> {
+                        0
+                    }
+                    listOfAttachedCandidates.size == 2->{
+                        ceil((listOfAttachedCandidates.size / 2.0)).toInt()
+                    }
+                    else -> {
+                        0
+                    }
+                };
                 listOfAttachedCandidates.forEachIndexed { index, postViewHolder ->
                     (postViewHolder as ViewHolderExtension).apply {
                         action(
@@ -106,19 +122,19 @@ class MyRecyclerView : RecyclerView {
         super.onScreenStateChanged(screenState)
     }
 
-    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
-        super.onWindowFocusChanged(hasWindowFocus)
-        listOfAttachedCandidates.forEach {
-            it.apply {
-                action(
-                    if (itemView.isFocused)
-                        ExtensionInfo(SelectiveAction.ATTACHED_WIN)
-                    else
-                        ExtensionInfo(SelectiveAction.ATTACHED_LOST)
-                )
-            }
-        }
-    }
+//    override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
+//        super.onWindowFocusChanged(hasWindowFocus)
+//        listOfAttachedCandidates.forEach {
+//            it.apply {
+//                action(
+//                    if (itemView.isFocused)
+//                        ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+//                    else
+//                        ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+//                )
+//            }
+//        }
+//    }
 
     override fun onWindowVisibilityChanged(visibility: Int) {
         super.onWindowVisibilityChanged(visibility)

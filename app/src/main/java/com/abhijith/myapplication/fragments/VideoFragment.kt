@@ -33,8 +33,11 @@ class VideoFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_video, container, false)
     }
 
+
+    private lateinit var views: View
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        views = view
         view.apply {
 //            val path = "android.resource://" + activity!!.packageName + "/" + R.raw.videoplayback
             lifecycle.addObserver(findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
@@ -51,5 +54,17 @@ class VideoFragment : Fragment() {
                     putString(VIDEO_URL, param1)
                 }
             }
+    }
+
+    fun abortAllOperation(){
+        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
+            pause()
+        }
+    }
+
+    fun resumeAllOperation(){
+        views.findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
+            start()
+        }
     }
 }

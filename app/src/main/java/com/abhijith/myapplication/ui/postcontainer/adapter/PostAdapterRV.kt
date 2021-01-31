@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
@@ -16,29 +15,65 @@ import com.google.android.material.textview.MaterialTextView
 class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerView.Adapter<PostAdapterRV.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        return PostViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.layour_post, parent, false)
-        )
+        return PostViewHolder(LayoutInflater
+            .from(parent.context)
+            .inflate(R.layout.layour_post, parent, false))
     }
 
-
+    lateinit var intLastClickViewHolder:PostViewHolder
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.apply {
-            vp.apply {
+        if(position==0){
+            intLastClickViewHolder = holder
+        }
+        holder.also {VH->
+            VH.vp.apply {
                 adapter = PostContentAdapterVP(fragmentActivity)
             }
         }
     }
 
+    override fun onViewAttachedToWindow(holder: PostViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        intLastClickViewHolder = holder
+        holder.itemView.setOnClickListener {
+            intLastClickViewHolder.mList.forEach {
+                if(holder==it){
+                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
+                }else{
+                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
+                }
+            }
+        }
+    }
+
+    override fun onViewDetachedFromWindow(holder: PostViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+    }
     override fun getItemCount(): Int {
         return 20
     }
 
+
+
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
+
+        //
+        var mList:List<PostAdapterRV.PostViewHolder> = listOf()
+
+        fun setCandidateList(list:List<PostAdapterRV.PostViewHolder>){
+            mList = list
+        }
+        fun getCandidateLit():List<PostAdapterRV.PostViewHolder>{
+            return mList
+        }
+        //
 
         val vp: ViewPager2 = v.findViewById(R.id.vp_post_media)
         val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvUserName)
         val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
+        init {
+
+        }
 
         @SuppressLint("SetTextI18n")
         override fun action(extensionInfo: ExtensionInfo) {
@@ -51,11 +86,17 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
                     mbActionOne.text = "ATTACHED_WIN"
+                    (vp.adapter as PostContentAdapterVP).apply {
+                        abortAllOperation()
+                    }
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
                     mbActionOne.text = "ATTACHED_LOST"
+                    (vp.adapter as PostContentAdapterVP).apply {
+                        resumeAllOperation()
+                    }
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {
@@ -95,9 +136,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
 
 interface ViewHolderExtension {
     /**Every state change via this method from RecyclerView*/
-    fun action(extensionInfo: ExtensionInfo) {
-
-    }
+    fun action(extensionInfo: ExtensionInfo) {}
 
     /** Identity viewHolder*/
     fun getPosition(): Int
@@ -113,11 +152,4 @@ interface ViewHolderExtension {
 
 data class ExtensionInfo(var action: SelectiveAction = SelectiveAction.NONE)
 
-
-enum class SelectiveAction {
-    NONE,
-    ATTACHED_WIN,
-    ATTACHED_LOST,
-    ATTACHED_CANDIDATE,
-    DETACHED
-}
+enum class SelectiveAction { NONE, ATTACHED_WIN, ATTACHED_LOST, ATTACHED_CANDIDATE, DETACHED }
