@@ -4,9 +4,12 @@ import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 
 var isRecyclerViewIsReady:Boolean = false
 
-val listOFCurrentlyPlatingVideos:MutableList<MySimpleExoPlayer> = mutableListOf()
 
+/**
+ * Second layer protection for play back conflicts*/
 object PlayOperations{
+
+    val listOFCurrentlyPlatingVideos:MutableList<MySimpleExoPlayer> = mutableListOf()
 
     fun removeSelf(player: MySimpleExoPlayer){
         listOFCurrentlyPlatingVideos.remove(player)
