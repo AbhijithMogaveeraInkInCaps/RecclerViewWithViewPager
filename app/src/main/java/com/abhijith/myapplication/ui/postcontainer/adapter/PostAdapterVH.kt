@@ -20,9 +20,11 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
             .inflate(R.layout.layour_post, parent, false))
     }
 
-    lateinit var intLastClickViewHolder:PostViewHolder
+    private lateinit var intLastClickViewHolder:PostViewHolder
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+        holder.myPosition = position
         if(position==0){
+            holder.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
             intLastClickViewHolder = holder
         }
         holder.also {VH->
@@ -46,9 +48,6 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: PostViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-    }
     override fun getItemCount(): Int {
         return 20
     }
@@ -57,17 +56,8 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
 
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
 
-        //
+        var myPosition:Int=-2;
         var mList:List<PostAdapterRV.PostViewHolder> = listOf()
-
-        fun setCandidateList(list:List<PostAdapterRV.PostViewHolder>){
-            mList = list
-        }
-        fun getCandidateLit():List<PostAdapterRV.PostViewHolder>{
-            return mList
-        }
-        //
-
         val vp: ViewPager2 = v.findViewById(R.id.vp_post_media)
         val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvUserName)
         val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
@@ -80,31 +70,29 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
             when (extensionInfo.action) {
 
                 SelectiveAction.NONE -> {
-//                    mtvUserName.text = "NONE"
                 }
 
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
                     mbActionOne.text = "ATTACHED_WIN"
-                    (vp.adapter as PostContentAdapterVP).apply {
-                        abortAllOperation()
+                    (vp.adapter as PostContentAdapterVP?)?.let {
+                        it.resumeAllOperation()
                     }
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
                     mbActionOne.text = "ATTACHED_LOST"
-                    (vp.adapter as PostContentAdapterVP).apply {
-                        resumeAllOperation()
+                    (vp.adapter as PostContentAdapterVP?)?.let {
+                        it.abortAllOperation()
                     }
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {
-//                    mtvUserName.text = "ATTACHED_CANDIDATE"
                 }
 
                 SelectiveAction.DETACHED -> {
-//                    mtvUserName.text = "DETACHED"
+
                 }
             }
         }
@@ -125,26 +113,14 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
 }
 
 
-//class AdapterData(data: List<Data>) {
-//
-//    inner class Data(type: TYPE, url: String)
-//
-//    enum class TYPE {
-//        VIDEO, PHOTO
-//    }
-//}
-
 interface ViewHolderExtension {
-    /**Every state change via this method from RecyclerView*/
+
     fun action(extensionInfo: ExtensionInfo) {}
 
-    /** Identity viewHolder*/
     fun getPosition(): Int
 
-    /**Another option is letting outside control this item should win or lose when selecting win or lose from attach candidate list*/
     fun wantsToAttach(): Boolean
 
-    /** It can change the action invoke order*/
     fun getAttachOrder(): Int
 
     fun getAttachView(): View
