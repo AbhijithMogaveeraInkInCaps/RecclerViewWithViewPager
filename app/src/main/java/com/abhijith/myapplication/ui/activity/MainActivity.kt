@@ -10,7 +10,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        supportActionBar?.elevation = 0f
         findViewById<RecyclerView>(R.id.rv).apply {
             adapter = PostAdapterRV(this@MainActivity)
         }
