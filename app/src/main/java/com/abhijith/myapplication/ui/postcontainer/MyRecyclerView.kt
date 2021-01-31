@@ -33,7 +33,7 @@ class MyRecyclerView : RecyclerView {
     }
 
     val listOfAttachedCandidates = mutableListOf<PostAdapterRV.PostViewHolder>()
-    var isScrolledDown = false
+//    var isScrolledDown = false
 
 
     override fun onChildAttachedToWindow(child: View) {
@@ -50,12 +50,6 @@ class MyRecyclerView : RecyclerView {
 
     }
 
-    init {
-        addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-        })
-    }
-
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
         val childViewHolder = getChildViewHolder(child)
@@ -63,7 +57,7 @@ class MyRecyclerView : RecyclerView {
             childViewHolder.also { VH ->
                 (VH as ViewHolderExtension).also { VHE ->
                     VHE.action(ExtensionInfo(SelectiveAction.DETACHED))
-                    listOfAttachedCandidates.remove(VHE)
+                    listOfAttachedCandidates.remove(VH)
                 }
             }
         }
@@ -71,26 +65,36 @@ class MyRecyclerView : RecyclerView {
 
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
-        isScrolledDown = dy < 0
+//        isScrolledDown = dy < 0
     }
 
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
         when (state) {
             SCROLL_STATE_IDLE -> {
-
-            }
-            SCROLL_STATE_DRAGGING -> {
                 val luckyWinner = ceil((listOfAttachedCandidates.size / 2.0)).toInt()
                 listOfAttachedCandidates.forEachIndexed { index, postViewHolder ->
                     (postViewHolder as ViewHolderExtension).apply {
                         action(
-                            if (index == luckyWinner) ExtensionInfo(SelectiveAction.ATTACHED_WIN) else ExtensionInfo(
-                                SelectiveAction.ATTACHED_LOST
-                            )
+                            if (index == luckyWinner)
+                                ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                            else
+                                ExtensionInfo(SelectiveAction.ATTACHED_LOST)
                         )
                     }
                 }
+            }
+            SCROLL_STATE_DRAGGING -> {
+//                val luckyWinner = ceil((listOfAttachedCandidates.size / 2.0)).toInt()
+//                listOfAttachedCandidates.forEachIndexed { index, postViewHolder ->
+//                    (postViewHolder as ViewHolderExtension).apply {
+//                        action(
+//                            if (index == luckyWinner) ExtensionInfo(SelectiveAction.ATTACHED_WIN) else ExtensionInfo(
+//                                SelectiveAction.ATTACHED_LOST
+//                            )
+//                        )
+//                    }
+//                }
             }
             SCROLL_STATE_SETTLING -> {
 
@@ -104,6 +108,16 @@ class MyRecyclerView : RecyclerView {
 
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
         super.onWindowFocusChanged(hasWindowFocus)
+        listOfAttachedCandidates.forEach {
+            it.apply {
+                action(
+                    if (itemView.isFocused)
+                        ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                    else
+                        ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+                )
+            }
+        }
     }
 
     override fun onWindowVisibilityChanged(visibility: Int) {
