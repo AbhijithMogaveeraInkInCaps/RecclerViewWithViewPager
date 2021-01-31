@@ -84,14 +84,14 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity) : RecyclerVi
 }
 
 
-class AdapterData(data: List<Data>) {
-
-    inner class Data(type: TYPE, url: String)
-
-    enum class TYPE {
-        VIDEO, PHOTO
-    }
-}
+//class AdapterData(data: List<Data>) {
+//
+//    inner class Data(type: TYPE, url: String)
+//
+//    enum class TYPE {
+//        VIDEO, PHOTO
+//    }
+//}
 
 interface ViewHolderExtension {
     /**Every state change via this method from RecyclerView*/
