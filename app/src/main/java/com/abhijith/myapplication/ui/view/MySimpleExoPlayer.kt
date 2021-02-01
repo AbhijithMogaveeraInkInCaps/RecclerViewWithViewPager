@@ -6,18 +6,20 @@ import android.util.AttributeSet
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayOperations
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.extractor.ExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.util.Util
 
 
 class MySimpleExoPlayer : PlayerView, LifecycleObserver {
@@ -32,15 +34,27 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
 
     }
 
-    private val loadControl = DefaultLoadControl()
-    private val bandwidthMeter = DefaultBandwidthMeter()
-    private val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
-    private var simpleExoPlayer: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
-    private val factory = DefaultHttpDataSourceFactory("exoplayer_video")
-    private val extectorFactory = DefaultExtractorsFactory() as ExtractorsFactory
+    lateinit var loadControl:DefaultLoadControl
+    lateinit var bandwidthMeter:DefaultBandwidthMeter
+    lateinit var trackSelector:DefaultTrackSelector
+    lateinit var simpleExoPlayer: SimpleExoPlayer
 
+    private fun buildMediaSourceNew(uri: Uri): MediaSource? {
+        val datasourceFactroy: DataSource.Factory =
+            DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
+        return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
+    }
     fun setUri(uri: Uri) {
-        val mediaSource = ExtractorMediaSource(uri, factory, extectorFactory, null, null)
+        loadControl = DefaultLoadControl()
+        bandwidthMeter= DefaultBandwidthMeter()
+        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+        simpleExoPlayer =ExoPlayerFactory.newSimpleInstance(
+            context,
+            trackSelector,
+            loadControl
+        )
+        val uri = RawResourceDataSource.buildRawResourceUri(R.raw.videoplayback)
+        val mediaSource = buildMediaSourceNew(uri)
         player = simpleExoPlayer
         keepScreenOn = true
         simpleExoPlayer.playWhenReady = false

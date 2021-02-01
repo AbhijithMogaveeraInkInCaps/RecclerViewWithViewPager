@@ -8,7 +8,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
-import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterVP
+import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterNew
+//import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterVP
+import com.abhijith.myapplication.ui.viewpager.adapter.PostViewHolder
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
@@ -30,7 +32,8 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
         holder.myPosition = position
         holder.also {VH->
             VH.vp.apply {
-                adapter = PostContentAdapterVP(fragmentActivity)
+//                adapter = PostViewHolder(fragmentActivity)
+                adapter = PostContentAdapterNew()
             }
             VH.dotsIndicator.setViewPager2(VH.vp)
 
@@ -52,7 +55,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
     }
 
     override fun getItemCount(): Int {
-        return 20
+        return 6
     }
 
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
@@ -77,7 +80,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
                     mbActionOne.text = "ATTACHED_WIN"
-                    (vp.adapter as PostContentAdapterVP?)?.let {
+                    (vp.adapter as PostContentAdapterNew?)?.let {
                         it.resumeAllOperation()
                     }
                 }
@@ -85,7 +88,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
                     mbActionOne.text = "ATTACHED_LOST"
-                    (vp.adapter as PostContentAdapterVP?)?.let {
+                    (vp.adapter as PostContentAdapterNew?)?.let {
                         it.abortAllOperation()
                     }
                 }
