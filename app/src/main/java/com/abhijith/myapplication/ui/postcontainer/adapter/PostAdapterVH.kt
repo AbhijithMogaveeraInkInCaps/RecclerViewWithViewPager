@@ -45,7 +45,7 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return 7
     }
 
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
