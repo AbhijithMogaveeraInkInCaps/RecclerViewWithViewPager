@@ -32,7 +32,6 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
         holder.myPosition = position
         holder.also {VH->
             VH.vp.apply {
-//                adapter = PostViewHolder(fragmentActivity)
                 adapter = PostContentAdapterNew()
             }
             VH.dotsIndicator.setViewPager2(VH.vp)
@@ -43,19 +42,10 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
     override fun onViewAttachedToWindow(holder: PostViewHolder) {
         super.onViewAttachedToWindow(holder)
         intLastClickViewHolder = holder
-        holder.itemView.setOnClickListener {
-            intLastClickViewHolder.mList.forEach {
-                if(holder==it){
-                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
-                }else{
-                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
-                }
-            }
-        }
     }
 
     override fun getItemCount(): Int {
-        return 6
+        return 10
     }
 
     inner class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
@@ -80,17 +70,13 @@ class PostAdapterRV(private val fragmentActivity: FragmentActivity)
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
                     mbActionOne.text = "ATTACHED_WIN"
-                    (vp.adapter as PostContentAdapterNew?)?.let {
-                        it.resumeAllOperation()
-                    }
+                    (vp.adapter as PostContentAdapterNew?)!!.resumeAllOperation()
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
                     mbActionOne.text = "ATTACHED_LOST"
-                    (vp.adapter as PostContentAdapterNew?)?.let {
-                        it.abortAllOperation()
-                    }
+                    (vp.adapter as PostContentAdapterNew?)!!.abortAllOperation()
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {

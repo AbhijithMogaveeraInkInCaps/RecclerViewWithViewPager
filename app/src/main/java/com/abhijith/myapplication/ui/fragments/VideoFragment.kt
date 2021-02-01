@@ -41,7 +41,7 @@ class VideoFragment : Fragment() {
 //            val path = "android.resource://" + activity!!.packageName + "/" + R.raw.videoplayback
             lifecycle.addObserver(findViewById<MySimpleExoPlayer>(R.id.mySimpleExoPlayer).apply {
 //                    setUri(Uri.parse(path))
-                    setUri(Uri.parse("https://i.imgur.com/7bMqysJ.mp4"))
+                    init(Uri.parse("https://i.imgur.com/7bMqysJ.mp4"))
             })
         }
     }

@@ -12,14 +12,17 @@ object PlayOperations{
     val listOFCurrentlyPlatingVideos:MutableList<MySimpleExoPlayer> = mutableListOf()
 
     fun removeSelf(player: MySimpleExoPlayer){
-        listOFCurrentlyPlatingVideos.remove(player)
+        synchronized(this){
+        listOFCurrentlyPlatingVideos.remove(player)}
     }
 
     fun pauseOther(player: MySimpleExoPlayer){
+        synchronized(this){
         listOFCurrentlyPlatingVideos.forEach {
-            it.pause()
             listOFCurrentlyPlatingVideos.remove(it)
+            it.pause()
         }
-        listOFCurrentlyPlatingVideos.add(player)
+        listOFCurrentlyPlatingVideos.add(player)}
     }
+
 }

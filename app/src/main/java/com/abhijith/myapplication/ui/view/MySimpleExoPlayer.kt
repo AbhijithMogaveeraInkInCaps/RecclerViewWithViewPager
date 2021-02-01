@@ -3,14 +3,13 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayOperations
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.extractor.ExtractorsFactory
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.TrackGroupArray
@@ -18,9 +17,20 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
+import kotlin.random.Random
 
+val list = mutableListOf(
+    RawResourceDataSource.buildRawResourceUri(R.raw.four),
+    RawResourceDataSource.buildRawResourceUri(R.raw.three),
+    RawResourceDataSource.buildRawResourceUri(R.raw.two),
+    RawResourceDataSource.buildRawResourceUri(R.raw.one),
+    RawResourceDataSource.buildRawResourceUri(R.raw.videoplayback),
+)
 
 class MySimpleExoPlayer : PlayerView, LifecycleObserver {
 
@@ -34,86 +44,107 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
 
     }
 
-    lateinit var loadControl:DefaultLoadControl
-    lateinit var bandwidthMeter:DefaultBandwidthMeter
-    lateinit var trackSelector:DefaultTrackSelector
     lateinit var simpleExoPlayer: SimpleExoPlayer
+
+    init {
+        keepScreenOn = true
+    }
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
         val datasourceFactroy: DataSource.Factory =
             DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
         return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
     }
-    fun setUri(uri: Uri) {
-        loadControl = DefaultLoadControl()
-        bandwidthMeter= DefaultBandwidthMeter()
-        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
-        simpleExoPlayer =ExoPlayerFactory.newSimpleInstance(
-            context,
-            trackSelector,
-            loadControl
-        )
-        val uri = RawResourceDataSource.buildRawResourceUri(R.raw.videoplayback)
-        val mediaSource = buildMediaSourceNew(uri)
+
+    fun init(uri: Uri) {
+        synchronized(this){
+        val loadControl: DefaultLoadControl = DefaultLoadControl()
+        val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
+        val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
         player = simpleExoPlayer
-        keepScreenOn = true
-        simpleExoPlayer.playWhenReady = false
-        simpleExoPlayer.prepare(mediaSource)
-        simpleExoPlayer.addListener(object : Player.EventListener {
-            override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
-            }
+        setUri(Uri.parse(""))
+        }
+    }
 
-            override fun onTracksChanged(
-                trackGroups: TrackGroupArray?,
-                trackSelections: TrackSelectionArray?
-            ) {
-            }
+    fun freeMemory() {
+        synchronized(this) {
+            simpleExoPlayer.stop(true)
+            simpleExoPlayer.release()
+        }
+    }
 
-            override fun onLoadingChanged(isLoading: Boolean) {
-            }
+    private fun setUri(uri: Uri) {
+        synchronized(this) {
+            val num = Random.nextInt(0, 4)
+            val mediaSource = buildMediaSourceNew(list[num])
+            simpleExoPlayer.playWhenReady = false
+            simpleExoPlayer.prepare(mediaSource)
+            simpleExoPlayer.addListener(object : Player.EventListener {
+                override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
+                }
 
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                override fun onTracksChanged(
+                    trackGroups: TrackGroupArray?,
+                    trackSelections: TrackSelectionArray?
+                ) {
+                }
 
-            }
+                override fun onLoadingChanged(isLoading: Boolean) {
 
-            override fun onRepeatModeChanged(repeatMode: Int) {
+                }
 
-            }
+                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
 
-            override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                }
 
-            }
+                override fun onRepeatModeChanged(repeatMode: Int) {
 
-            override fun onPlayerError(error: ExoPlaybackException?) {
+                }
 
-            }
+                override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
 
-            override fun onPositionDiscontinuity(reason: Int) {
+                }
 
-            }
+                override fun onPlayerError(error: ExoPlaybackException?) {
 
-            override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+                }
 
-            }
+                override fun onPositionDiscontinuity(reason: Int) {
 
-            override fun onSeekProcessed() {
+                }
 
-            }
+                override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
 
-        })
+                }
+
+                override fun onSeekProcessed() {
+
+                }
+
+            })
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun pause() {
-        PlayOperations.removeSelf(this)
-        simpleExoPlayer.playWhenReady = false
-        simpleExoPlayer.playbackState
+        Log.e("HHHH","not called")
+        synchronized(this) {
+            simpleExoPlayer.playWhenReady = false
+            simpleExoPlayer.playbackState
+            PlayOperations.removeSelf(this)
+            freeMemory()
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun play() {
-        PlayOperations.pauseOther(this)
-        simpleExoPlayer.playWhenReady = true
-        simpleExoPlayer.playbackState
+        Log.e("HHHH","called")
+        synchronized(this) {
+            PlayOperations.pauseOther(this)
+            init(Uri.parse(""))
+            simpleExoPlayer.playWhenReady = true
+            simpleExoPlayer.playbackState
+        }
     }
 }
