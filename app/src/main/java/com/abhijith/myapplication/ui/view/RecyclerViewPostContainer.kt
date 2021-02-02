@@ -6,7 +6,6 @@ import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.abhijith.myapplication.ui.PlayerManager
 import com.abhijith.myapplication.ui.view.adapters.ExtensionInfo
 import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
@@ -63,6 +62,7 @@ class RecyclerViewPostContainer : RecyclerView {
         isScrolledDown = dy < 0
     }
 
+    var lastScrollFocus: Int = -1
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
 
@@ -75,14 +75,17 @@ class RecyclerViewPostContainer : RecyclerView {
         if (visibleItemPosition != -1)
             when (state) {
                 SCROLL_STATE_IDLE -> {
-                    listOfAttachedCandidates.forEach { postViewHolder ->
-                        (postViewHolder as ViewHolderExtension).apply {
-                            action(
-                                if (postViewHolder.myPosition == visibleItemPosition)
-                                    ExtensionInfo(SelectiveAction.ATTACHED_WIN)
-                                else
-                                    ExtensionInfo(SelectiveAction.ATTACHED_LOST)
-                            )
+                    if (lastScrollFocus != visibleItemPosition) {
+                        lastScrollFocus = visibleItemPosition
+                        listOfAttachedCandidates.forEach { postViewHolder ->
+                            (postViewHolder as ViewHolderExtension).apply {
+                                action(
+                                    if (postViewHolder.myPosition == visibleItemPosition)
+                                        ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                                    else
+                                        ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+                                )
+                            }
                         }
                     }
                 }
