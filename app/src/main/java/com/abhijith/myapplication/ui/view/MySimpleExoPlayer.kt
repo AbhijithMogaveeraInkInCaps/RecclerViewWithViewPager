@@ -68,7 +68,7 @@ class MySimpleExoPlayer : PlayerView {
 
     private fun freeMemory() {
         synchronized(this) {
-            simpleExoPlayer.stop(true)
+            simpleExoPlayer.stop()
             simpleExoPlayer.release()
         }
     }

@@ -2,6 +2,7 @@ package com.abhijith.myapplication.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,13 +51,10 @@ class RecyclerViewPostContainer : RecyclerView {
         PlayerManager.liveData.observeForever(function)
     }
 
-    var callback: () -> Unit = {}
-    fun init(): () -> Unit {
-        return callback
-    }
 
     override fun onChildAttachedToWindow(child: View) {
         super.onChildAttachedToWindow(child)
+        msg("onChildAttachedToWindow")
         val childViewHolder = getChildViewHolder(child)
         if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
@@ -72,6 +70,7 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
+        msg("onChildDetachedFromWindow")
         val childViewHolder = getChildViewHolder(child)
         if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
@@ -90,13 +89,16 @@ class RecyclerViewPostContainer : RecyclerView {
     }
 
     var lastScrollFocus: Int = -1
+
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
-
+        msg("onScrollStateChanged")
         val visibleItemPosition: Int = if (!isScrolledDown) {
-            (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+            (layoutManager as LinearLayoutManager)
+                .findLastCompletelyVisibleItemPosition()
         } else {
-            (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+            (layoutManager as LinearLayoutManager)
+                .findLastCompletelyVisibleItemPosition()
         }
 
         if (visibleItemPosition != -1)
@@ -124,3 +126,6 @@ class RecyclerViewPostContainer : RecyclerView {
     }
 }
 
+fun msg(str: String) {
+        Log.e("LogMessages", str)
+}

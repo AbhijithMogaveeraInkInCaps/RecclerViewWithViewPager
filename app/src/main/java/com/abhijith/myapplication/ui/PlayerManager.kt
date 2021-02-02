@@ -1,19 +1,13 @@
 package com.abhijith.myapplication.ui
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
-import com.abhijith.myapplication.ui.view.adapters.ViewPager2Adapter
 
-/**
- * Second layer protection for play back conflicts*/
 enum class PlayerManagerEvent {
     NEW_PLAYER
 }
 
 object PlayerManager {
-
     val listOFCurrentlyPlatingVideos: MutableList<MySimpleExoPlayer> = mutableListOf()
     val liveData:MutableLiveData<PlayerManagerEvent> = MutableLiveData()
 
