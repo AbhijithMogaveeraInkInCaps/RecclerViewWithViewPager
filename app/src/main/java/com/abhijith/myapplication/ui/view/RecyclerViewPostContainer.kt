@@ -1,4 +1,4 @@
-package com.abhijith.myapplication.ui.postcontainer
+package com.abhijith.myapplication.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,12 +6,13 @@ import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.abhijith.myapplication.ui.postcontainer.adapter.ExtensionInfo
-import com.abhijith.myapplication.ui.postcontainer.adapter.PostAdapterRV
-import com.abhijith.myapplication.ui.postcontainer.adapter.SelectiveAction
-import com.abhijith.myapplication.ui.postcontainer.adapter.ViewHolderExtension
+import com.abhijith.myapplication.ui.PlayerManager
+import com.abhijith.myapplication.ui.view.adapters.ExtensionInfo
+import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
+import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
+import com.abhijith.myapplication.ui.view.adapters.ViewHolderExtension
 
-class PostContainerRV : RecyclerView {
+class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context!!, attrs, defStyleAttr)
 
@@ -24,14 +25,14 @@ class PostContainerRV : RecyclerView {
 
     constructor(context: Context?) : super(context!!) {}
 
-    private val listOfAttachedCandidates = mutableListOf<PostAdapterRV.PostViewHolder>()
+    private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
     private var isScrolledDown = false
 
 
     override fun onChildAttachedToWindow(child: View) {
         super.onChildAttachedToWindow(child)
         val childViewHolder = getChildViewHolder(child)
-        if (childViewHolder is PostAdapterRV.PostViewHolder) {
+        if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
                 (VH as ViewHolderExtension).also { VHE ->
                     VHE.action(ExtensionInfo(SelectiveAction.ATTACHED_CANDIDATE))
@@ -46,7 +47,7 @@ class PostContainerRV : RecyclerView {
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
         val childViewHolder = getChildViewHolder(child)
-        if (childViewHolder is PostAdapterRV.PostViewHolder) {
+        if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
                 (VH as ViewHolderExtension).also { VHE ->
                     VHE.action(ExtensionInfo(SelectiveAction.DETACHED))
@@ -59,6 +60,7 @@ class PostContainerRV : RecyclerView {
 
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
+        PlayerManager.isInitialPlay = false
         isScrolledDown = dy < 0
     }
 
@@ -73,7 +75,6 @@ class PostContainerRV : RecyclerView {
 
         if (visibleItemPosition != -1)
             when (state) {
-
                 SCROLL_STATE_IDLE -> {
                     listOfAttachedCandidates.forEach { postViewHolder ->
                         (postViewHolder as ViewHolderExtension).apply {

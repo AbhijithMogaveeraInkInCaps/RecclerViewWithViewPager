@@ -4,11 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import com.abhijith.myapplication.R
-import com.abhijith.myapplication.ui.PlayOperations
+import com.abhijith.myapplication.ui.PlayerManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -32,7 +29,7 @@ val list = mutableListOf(
     RawResourceDataSource.buildRawResourceUri(R.raw.videoplayback),
 )
 
-class MySimpleExoPlayer : PlayerView, LifecycleObserver {
+class MySimpleExoPlayer : PlayerView {
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr)
@@ -67,7 +64,7 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
         }
     }
 
-    fun freeMemory() {
+    private fun freeMemory() {
         synchronized(this) {
             simpleExoPlayer.stop(true)
             simpleExoPlayer.release()
@@ -126,25 +123,30 @@ class MySimpleExoPlayer : PlayerView, LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun pause() {
-        Log.e("HHHH","not called")
+    fun abort() {
         synchronized(this) {
+            Log.e("Play","Pause")
             simpleExoPlayer.playWhenReady = false
             simpleExoPlayer.playbackState
-            PlayOperations.removeSelf(this)
+            PlayerManager.removeSelfAndAbort(this)
             freeMemory()
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun play() {
-        Log.e("HHHH","called")
         synchronized(this) {
-            PlayOperations.pauseOther(this)
+            Log.e("Play","Play")
+            PlayerManager.pauseOther(this)
             init(Uri.parse(""))
             simpleExoPlayer.playWhenReady = true
             simpleExoPlayer.playbackState
         }
+    }
+
+    fun pause() {
+        Log.e("Play","Pause")
+        simpleExoPlayer.playWhenReady = false
+        simpleExoPlayer.playbackState
+        PlayerManager.removeSelfAndAbort(this)
     }
 }
