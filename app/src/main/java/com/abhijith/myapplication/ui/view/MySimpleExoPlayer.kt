@@ -54,13 +54,14 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     fun init(uri: Uri) {
-        synchronized(this){
-        val loadControl: DefaultLoadControl = DefaultLoadControl()
-        val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
-        val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
-        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
-        player = simpleExoPlayer
-        setUri(Uri.parse(""))
+        synchronized(this) {
+            val loadControl: DefaultLoadControl = DefaultLoadControl()
+            val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
+            val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+            simpleExoPlayer =
+                ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
+            player = simpleExoPlayer
+            setUri(Uri.parse(""))
         }
     }
 
@@ -125,7 +126,7 @@ class MySimpleExoPlayer : PlayerView {
 
     fun abort() {
         synchronized(this) {
-            Log.e("Play","Pause")
+            Log.e("Play", "Pause")
             simpleExoPlayer.playWhenReady = false
             simpleExoPlayer.playbackState
             PlayerManager.removeSelfAndAbort(this)
@@ -135,7 +136,7 @@ class MySimpleExoPlayer : PlayerView {
 
     fun play() {
         synchronized(this) {
-            Log.e("Play","Play")
+            Log.e("Play", "Play")
             PlayerManager.pauseOther(this)
             init(Uri.parse(""))
             simpleExoPlayer.playWhenReady = true
@@ -144,11 +145,21 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     fun pause() {
-        Log.e("Play","Pause")
+        Log.e("Play", "Pause")
         simpleExoPlayer.playWhenReady = false
         simpleExoPlayer.playbackState
         PlayerManager.removeSelfAndAbort(this)
         freeMemory()
+    }
 
+    fun mute():Boolean {
+        val curentVol = simpleExoPlayer.volume
+        if (curentVol == 0f) {
+            simpleExoPlayer.volume = 1f
+            return true
+        } else {
+            simpleExoPlayer.volume = 0f
+            return false
+        }
     }
 }

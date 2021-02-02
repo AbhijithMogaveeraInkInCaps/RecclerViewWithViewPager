@@ -92,15 +92,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dots_indicator" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/mbActionOne"
+        <ImageView
+            android:id="@+id/btnVolume"
             style="?android:attr/actionButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:drawableEnd="@drawable/ic_link"
-            android:fontFamily="@font/roboto_slab_bold"
-            android:text="view more"
+            android:src="@drawable/ic_volume_up"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mtvDesc" />

@@ -3,16 +3,13 @@ package com.abhijith.myapplication.ui
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 import com.abhijith.myapplication.ui.view.adapters.ViewPager2Adapter
 
-//var isRecyclerViewIsReady: Boolean = false
-
-
 /**
  * Second layer protection for play back conflicts*/
 object PlayerManager {
 
     var isInitialPlay:Boolean = false
 
-    private val listOFCurrentlyPlatingVideos: MutableList<MySimpleExoPlayer> = mutableListOf()
+    val listOFCurrentlyPlatingVideos: MutableList<MySimpleExoPlayer> = mutableListOf()
 
     fun removeSelfAndAbort(player: MySimpleExoPlayer) {
         synchronized(this) {
@@ -30,6 +27,8 @@ object PlayerManager {
         }
     }
 
-    private val attachedCandidates:MutableList<ViewPager2Adapter.PostViewHolder> = mutableListOf()
+}
 
+object PlayerFlags{
+    var isMute:Boolean=false
 }

@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
+import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
 //import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterVP
 import com.google.android.material.button.MaterialButton
@@ -37,6 +39,7 @@ class RecyclerViewAdapter :
     override fun onViewAttachedToWindow(holder: ViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.also { VH ->
+
             VH.vp.apply {
                 adapter = ViewPager2Adapter()
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -53,9 +56,18 @@ class RecyclerViewAdapter :
                             }
                     }
                 })
+                VH.btnOne.setOnClickListener {btn->
+                    PlayerFlags.isMute = !PlayerFlags.isMute
+                    PlayerManager.listOFCurrentlyPlatingVideos.forEach {
+                        if(it.mute()){
+                            VH.btnOne.setImageResource(R.drawable.ic_volume_up)
+                        }else{
+                            VH.btnOne.setImageResource(R.drawable.ic_volume_off)
+                        }
+                    }
+                }
             }
             VH.dotsIndicator.setViewPager2(VH.vp)
-
         }
         lastClickViewHolder = holder
     }
@@ -71,7 +83,7 @@ class RecyclerViewAdapter :
         var mList: List<ViewHolder> = listOf()
         val vp: ViewPager2 = v.findViewById(R.id.vp_post_media)
         private val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
-        private val mbActionOne: MaterialButton = v.findViewById(R.id.mbActionOne)
+        val btnOne: ImageView = v.findViewById(R.id.btnVolume)
         val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
 
         init {
@@ -83,21 +95,21 @@ class RecyclerViewAdapter :
             when (extensionInfo.action) {
 
                 SelectiveAction.NONE -> {
+
                 }
 
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
-                    mbActionOne.text = "ATTACHED_WIN"
                     (vp.adapter as ViewPager2Adapter?)!!.resumeAllOperation()
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
-                    mbActionOne.text = "ATTACHED_LOST"
                     (vp.adapter as ViewPager2Adapter?)!!.pauseAllOperations()
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {
+
                 }
 
                 SelectiveAction.DETACHED -> {
