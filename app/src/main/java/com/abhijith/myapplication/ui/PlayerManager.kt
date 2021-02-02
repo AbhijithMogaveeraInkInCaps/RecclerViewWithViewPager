@@ -1,14 +1,12 @@
 package com.abhijith.myapplication.ui
 
+import android.util.Log
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 import com.abhijith.myapplication.ui.view.adapters.ViewPager2Adapter
 
 /**
  * Second layer protection for play back conflicts*/
 object PlayerManager {
-
-    var isInitialPlay:Boolean = false
-
     val listOFCurrentlyPlatingVideos: MutableList<MySimpleExoPlayer> = mutableListOf()
 
     fun removeSelfAndAbort(player: MySimpleExoPlayer) {

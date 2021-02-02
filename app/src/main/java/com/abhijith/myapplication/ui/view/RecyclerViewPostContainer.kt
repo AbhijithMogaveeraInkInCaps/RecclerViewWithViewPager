@@ -60,7 +60,6 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
-        PlayerManager.isInitialPlay = false
         isScrolledDown = dy < 0
     }
 

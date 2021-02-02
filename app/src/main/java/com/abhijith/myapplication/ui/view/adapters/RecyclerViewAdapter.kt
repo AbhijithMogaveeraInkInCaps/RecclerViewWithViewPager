@@ -31,9 +31,6 @@ class RecyclerViewAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.myPosition = position
-        if (position == 0)
-            PlayerManager.isInitialPlay = true
-
     }
 
     override fun onViewAttachedToWindow(holder: ViewHolder) {

@@ -42,7 +42,7 @@ class MySimpleExoPlayer : PlayerView {
 
     }
 
-    lateinit var simpleExoPlayer: SimpleExoPlayer
+    private lateinit var simpleExoPlayer: SimpleExoPlayer
 
     init {
         keepScreenOn = true
@@ -127,7 +127,6 @@ class MySimpleExoPlayer : PlayerView {
 
     fun abort() {
         synchronized(this) {
-            Log.e("Play", "Pause")
             simpleExoPlayer.playWhenReady = false
             simpleExoPlayer.playbackState
             PlayerManager.removeSelfAndAbort(this)
@@ -137,7 +136,6 @@ class MySimpleExoPlayer : PlayerView {
 
     fun play() {
         synchronized(this) {
-            Log.e("Play", "Play")
             PlayerManager.pauseOther(this)
             init(Uri.parse(""))
             simpleExoPlayer.playWhenReady = true
@@ -148,7 +146,6 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     fun pause() {
-        Log.e("Play", "Pause")
         simpleExoPlayer.playWhenReady = false
         simpleExoPlayer.playbackState
         PlayerManager.removeSelfAndAbort(this)
