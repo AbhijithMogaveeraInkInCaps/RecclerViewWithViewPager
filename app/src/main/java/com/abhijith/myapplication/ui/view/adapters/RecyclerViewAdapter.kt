@@ -42,13 +42,15 @@ class RecyclerViewAdapter :
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                     override fun onPageSelected(position: Int) {
                         super.onPageSelected(position)
-                        (adapter as ViewPager2Adapter).viewholderList.forEach {
-                            if(it.myPosition==position){
-                                it.mySimpleExoPlayer.play()
-                            }else{
-                                it.mySimpleExoPlayer.pause()
+                        (adapter as ViewPager2Adapter)
+                            .viewholderList
+                            .forEach {
+                                if (it.myPosition == position) {
+                                    it.mySimpleExoPlayer.play()
+                                } else {
+                                    it.mySimpleExoPlayer.pause()
+                                }
                             }
-                        }
                     }
                 })
             }
@@ -57,6 +59,7 @@ class RecyclerViewAdapter :
         }
         lastClickViewHolder = holder
     }
+
 
     override fun getItemCount(): Int {
         return 7
@@ -103,6 +106,7 @@ class RecyclerViewAdapter :
             }
         }
     }
+
 
 }
 

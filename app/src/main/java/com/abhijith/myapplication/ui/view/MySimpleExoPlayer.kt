@@ -148,5 +148,7 @@ class MySimpleExoPlayer : PlayerView {
         simpleExoPlayer.playWhenReady = false
         simpleExoPlayer.playbackState
         PlayerManager.removeSelfAndAbort(this)
+        freeMemory()
+
     }
 }
