@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.Log
 import com.abhijith.myapplication.R
+import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -141,6 +142,8 @@ class MySimpleExoPlayer : PlayerView {
             init(Uri.parse(""))
             simpleExoPlayer.playWhenReady = true
             simpleExoPlayer.playbackState
+            if(PlayerFlags.isMute)
+                mute()
         }
     }
 
