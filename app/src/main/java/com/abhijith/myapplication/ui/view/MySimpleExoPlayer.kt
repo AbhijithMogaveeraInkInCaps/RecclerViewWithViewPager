@@ -87,38 +87,39 @@ class MySimpleExoPlayer : PlayerView {
                     trackGroups: TrackGroupArray?,
                     trackSelections: TrackSelectionArray?
                 ) {
+                    Log.e("ExoPlayer","onTracksChanged")
                 }
 
                 override fun onLoadingChanged(isLoading: Boolean) {
-
+                    Log.e("ExoPlayer","onLoadingChanged")
                 }
 
                 override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-
+                    Log.e("ExoPlayer","onPlayerStateChanged")
                 }
 
                 override fun onRepeatModeChanged(repeatMode: Int) {
-
+                    Log.e("ExoPlayer","onRepeatModeChanged")
                 }
 
                 override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-
+                    Log.e("ExoPlayer","onShuffleModeEnabledChanged")
                 }
 
                 override fun onPlayerError(error: ExoPlaybackException?) {
-
+                    Log.e("ExoPlayer","onPlayerError")
                 }
 
                 override fun onPositionDiscontinuity(reason: Int) {
-
+                    Log.e("ExoPlayer","onPositionDiscontinuity")
                 }
 
                 override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
-
+                    Log.e("ExoPlayer","onPlaybackParametersChanged")
                 }
 
                 override fun onSeekProcessed() {
-
+                    Log.e("ExoPlayer","onSeekProcessed")
                 }
 
             })
