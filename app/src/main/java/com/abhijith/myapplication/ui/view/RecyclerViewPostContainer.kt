@@ -6,6 +6,8 @@ import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.abhijith.myapplication.ui.PlayerManager
+import com.abhijith.myapplication.ui.PlayerManagerEvent
 import com.abhijith.myapplication.ui.view.adapters.ExtensionInfo
 import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
@@ -26,7 +28,32 @@ class RecyclerViewPostContainer : RecyclerView {
 
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
     private var isScrolledDown = false
+    var flag = true
 
+    init {
+        val function: (t: PlayerManagerEvent) -> Unit = {
+            if (flag) {
+                flag = false
+                listOfAttachedCandidates.forEach { postViewHolder ->
+
+                    (postViewHolder as ViewHolderExtension).apply {
+                        action(
+                            if (postViewHolder.myPosition == 0)
+                                ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                            else
+                                ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+                        )
+                    }
+                }
+            }
+        }
+        PlayerManager.liveData.observeForever(function)
+    }
+
+    var callback: () -> Unit = {}
+    fun init(): () -> Unit {
+        return callback
+    }
 
     override fun onChildAttachedToWindow(child: View) {
         super.onChildAttachedToWindow(child)

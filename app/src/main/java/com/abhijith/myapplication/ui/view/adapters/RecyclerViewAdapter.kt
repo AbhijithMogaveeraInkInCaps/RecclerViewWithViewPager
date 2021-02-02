@@ -27,6 +27,7 @@ class RecyclerViewAdapter :
         )
     }
 
+
     private lateinit var lastClickViewHolder: ViewHolder
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -36,7 +37,6 @@ class RecyclerViewAdapter :
     override fun onViewAttachedToWindow(holder: ViewHolder) {
         super.onViewAttachedToWindow(holder)
         holder.also { VH ->
-
             VH.vp.apply {
                 adapter = ViewPager2Adapter()
                 registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
