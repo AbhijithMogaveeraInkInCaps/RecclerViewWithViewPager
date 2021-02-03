@@ -92,7 +92,7 @@ class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
         val btnOne: ImageView = v.findViewById(R.id.btnVolume)
         val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
         var position: Long = C.TIME_UNSET
-
+        var lastPausedLocation:Long = C.TIME_UNSET
         init {
 //            PlayerFlags.isMuteLiveData.observeForever {
 //                if (it) {

@@ -3,9 +3,12 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
+import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isScrolled
+import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isScrolledDown
 import com.abhijith.myapplication.ui.view.adapters.VideoData
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
@@ -95,9 +98,17 @@ class MySimpleExoPlayer : PlayerView {
     fun play(videoData: VideoData) {
         synchronized(this) {
             if (!isScrollingFast) {
+                if (isScrolled && isScrolledDown) {
+//                    Log.e("Aloor","Aloor")
+                    simpleExoPlayer.seekTo(RecyclerViewPostContainer.detachedCandidateTop)
+                }
+
+                if (isScrolled && !isScrolledDown) {
+                    simpleExoPlayer.seekTo(RecyclerViewPostContainer.detachedCandidateBottom)
+                }
                 PlayerManager.pauseOther(videoData, this)
                 init(videoData)
-                simpleExoPlayer.seekTo(position);
+
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
                 if (PlayerFlags.isMute)
@@ -108,6 +119,11 @@ class MySimpleExoPlayer : PlayerView {
 
     fun pause(videoData: VideoData) {
         position = simpleExoPlayer.contentPosition
+        if (isScrolledDown) {
+            RecyclerViewPostContainer.detachedCandidateBottom = position
+        } else {
+            RecyclerViewPostContainer.detachedCandidateTop = position
+        }
         abort()
     }
 

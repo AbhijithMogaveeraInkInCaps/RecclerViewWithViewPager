@@ -13,8 +13,13 @@ import com.abhijith.myapplication.ui.view.adapters.ExtensionInfo
 import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
 import com.abhijith.myapplication.ui.view.adapters.ViewHolderExtension
+import com.google.android.exoplayer2.C
 
 var isScrollingFast: Boolean = false
+
+data class RecyclerViewMetaData(
+    var pausedLocation: Long = C.TIME_UNSET
+)
 
 class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
@@ -30,7 +35,15 @@ class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?) : super(context!!) {}
 
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
-    private var isScrolledDown = false
+
+    companion object {
+        var detachedCandidateTop: Long = C.TIME_UNSET
+        var isScrolledDown = false
+        var isScrolled = false
+        var detachedCandidateBottom: Long = C.TIME_UNSET
+    }
+
+
     var flag = true
 
     init {
@@ -90,6 +103,7 @@ class RecyclerViewPostContainer : RecyclerView {
         isScrolledDown = dy < 0
         Log.e("RecyclerView", "Fast scrolling start")
         isScrollingFast = true
+        isScrolled = true
     }
 
     var lastScrollFocus: Int = -1
