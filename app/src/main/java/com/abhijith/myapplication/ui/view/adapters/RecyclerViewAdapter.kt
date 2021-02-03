@@ -97,11 +97,13 @@ class RecyclerViewAdapter :
 
                 SelectiveAction.ATTACHED_WIN -> {
                     mtvUserName.text = "ATTACHED_WIN"
+                    vp.isUserInputEnabled = true
                     (vp.adapter as ViewPager2Adapter?)!!.resumeAllOperation()
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
                     mtvUserName.text = "ATTACHED_LOST"
+                    vp.isUserInputEnabled = false
                     (vp.adapter as ViewPager2Adapter?)!!.pauseAllOperations()
                 }
 
