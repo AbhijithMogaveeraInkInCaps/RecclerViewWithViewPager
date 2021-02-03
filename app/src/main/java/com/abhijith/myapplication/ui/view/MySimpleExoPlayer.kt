@@ -7,9 +7,7 @@ import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
-import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isScrolled
-import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isScrolledDown
-import com.abhijith.myapplication.ui.view.adapters.VideoData
+import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayerFactory
@@ -48,7 +46,9 @@ class MySimpleExoPlayer : PlayerView {
         keepScreenOn = true
     }
 
-    var position: Long = C.TIME_UNSET
+    companion object {
+        var position: Long = C.TIME_UNSET
+    }
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
         val datasourceFactroy: DataSource.Factory =
@@ -56,15 +56,15 @@ class MySimpleExoPlayer : PlayerView {
         return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
     }
 
-    fun init(videoData: VideoData) {
+    fun init(owner:RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
             val loadControl = DefaultLoadControl()
-            val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
+            val bandwidthMeter = DefaultBandwidthMeter()
             val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
             simpleExoPlayer =
                 ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
             player = simpleExoPlayer
-            setUri(videoData.uri)
+            setUri(owner)
         }
     }
 
@@ -76,7 +76,7 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    private fun setUri(uri: Uri) {
+    private fun setUri(owner:RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
             val num = Random.nextInt(0, 4)
             val mediaSource = buildMediaSourceNew(list[num])
@@ -87,6 +87,7 @@ class MySimpleExoPlayer : PlayerView {
 
     fun abort() {
         synchronized(this) {
+            Log.e("Sukesh", "Playing End")
             if (!isScrollingFast) {
                 simpleExoPlayer.playWhenReady = false
                 simpleExoPlayer.playbackState
@@ -95,20 +96,13 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun play(videoData: VideoData) {
+    fun play(owner:RecyclerViewStateModel.SubViewHolderData) {
+
         synchronized(this) {
             if (!isScrollingFast) {
-                if (isScrolled && isScrolledDown) {
-//                    Log.e("Aloor","Aloor")
-                    simpleExoPlayer.seekTo(RecyclerViewPostContainer.detachedCandidateTop)
-                }
-
-                if (isScrolled && !isScrolledDown) {
-                    simpleExoPlayer.seekTo(RecyclerViewPostContainer.detachedCandidateBottom)
-                }
-                PlayerManager.pauseOther(videoData, this)
-                init(videoData)
-
+                Log.e("Sukesh", "Playing Start")
+                PlayerManager.pauseOther(owner, this)
+                init(owner)
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
                 if (PlayerFlags.isMute)
@@ -117,13 +111,7 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun pause(videoData: VideoData) {
-        position = simpleExoPlayer.contentPosition
-        if (isScrolledDown) {
-            RecyclerViewPostContainer.detachedCandidateBottom = position
-        } else {
-            RecyclerViewPostContainer.detachedCandidateTop = position
-        }
+    fun pause(owner:RecyclerViewStateModel.SubViewHolderData) {
         abort()
     }
 

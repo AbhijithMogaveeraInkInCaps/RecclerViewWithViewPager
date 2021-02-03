@@ -1,22 +1,18 @@
 package com.abhijith.myapplication.ui.view.adapters
 
-import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.abhijith.myapplication.R
+import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.C
 
 
-data class VideoData(val uri: Uri)
-
-class ViewPager2Adapter(val context: Context, val dataList: List<VideoData>) :
+class ViewPager2Adapter(val model:RecyclerViewStateModel.ViewHolderData) :
     RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -30,18 +26,18 @@ class ViewPager2Adapter(val context: Context, val dataList: List<VideoData>) :
         holder.apply {
             viewHolderList.add(this)
             var str: String = "https://wallpapercave.com/wp/wp1817745.jpg"
-            Glide.with(context).load("empty")
-                .thumbnail(Glide.with(context).load(str))
+            Glide.with(RecyclerViewStateModel.applicationContext).load("empty")
+                .thumbnail(Glide.with(RecyclerViewStateModel.applicationContext).load(str))
                 .into(imageView);
             myPosition = position
             val path =
                 "android.resource://" + "com.abhijith.myapplication" + "/" + R.raw.videoplayback
-            mySimpleExoPlayer.init(dataList[position])
+            mySimpleExoPlayer.init(model.viewPagerData[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return dataList.size
+        return model.viewPagerData.size
     }
 
     lateinit var currentViewHolder: PostViewHolder
@@ -67,12 +63,12 @@ class ViewPager2Adapter(val context: Context, val dataList: List<VideoData>) :
 
     fun pauseAllOperations() {
         currentViewHolder.imageView.beVisible()
-        currentViewHolder.mySimpleExoPlayer.pause(dataList[currentViewHolder.myPosition])
+        currentViewHolder.mySimpleExoPlayer.pause(model.viewPagerData[currentViewHolder.myPosition])
     }
 
     fun resumeAllOperation() {
         currentViewHolder.imageView.beInvisible()
-        currentViewHolder.mySimpleExoPlayer.play(dataList[currentViewHolder.myPosition])
+        currentViewHolder.mySimpleExoPlayer.play(model.viewPagerData[currentViewHolder.myPosition])
     }
 
     class PostViewHolder(v: View) : RecyclerView.ViewHolder(v) {

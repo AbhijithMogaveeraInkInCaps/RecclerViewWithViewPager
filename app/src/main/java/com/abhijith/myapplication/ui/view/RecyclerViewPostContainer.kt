@@ -38,7 +38,7 @@ class RecyclerViewPostContainer : RecyclerView {
 
     companion object {
         var detachedCandidateTop: Long = C.TIME_UNSET
-        var isScrolledDown = false
+        var isScrolledDownn = false
         var isScrolled = false
         var detachedCandidateBottom: Long = C.TIME_UNSET
     }
@@ -66,10 +66,8 @@ class RecyclerViewPostContainer : RecyclerView {
         PlayerManager.liveData.observeForever(function)
     }
 
-
     override fun onChildAttachedToWindow(child: View) {
         super.onChildAttachedToWindow(child)
-        msg("onChildAttachedToWindow")
         val childViewHolder = getChildViewHolder(child)
         if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
@@ -80,12 +78,14 @@ class RecyclerViewPostContainer : RecyclerView {
                 }
             }
         }
-
     }
 
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
         msg("onChildDetachedFromWindow")
+        if(!isScrolledDownn)
+            Log.e("AloorT", "Aloor ${MySimpleExoPlayer.position}")
+        MySimpleExoPlayer.position = C.TIME_UNSET
         val childViewHolder = getChildViewHolder(child)
         if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
             childViewHolder.also { VH ->
@@ -100,7 +100,7 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
-        isScrolledDown = dy < 0
+        isScrolledDownn = dy < 0
         Log.e("RecyclerView", "Fast scrolling start")
         isScrollingFast = true
         isScrolled = true
@@ -111,7 +111,7 @@ class RecyclerViewPostContainer : RecyclerView {
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
         msg("onScrollStateChanged")
-        val visibleItemPosition: Int = if (!isScrolledDown) {
+        val visibleItemPosition: Int = if (!isScrolledDownn) {
             if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
                 (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
             else

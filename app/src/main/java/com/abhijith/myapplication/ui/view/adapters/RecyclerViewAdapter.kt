@@ -11,12 +11,13 @@ import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
+import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
 import com.google.android.exoplayer2.C
 import com.google.android.material.textview.MaterialTextView
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 
 
-class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
+class RecyclerViewAdapter(val stateModel:RecyclerViewStateModel) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,9 +36,9 @@ class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
         holder.also { VH ->
             VH.vp.apply {
                 if (adapter == null) {
-                    val dataList = listVideoDataList[position]
+                    val dataList = stateModel.getRVData()[position]
                     adapter = ViewPager2Adapter(
-                        context, dataList
+                        stateModel.getRVData()[position]
                     )
 
                     registerOnPageChangeCallback(object :
@@ -49,10 +50,10 @@ class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
                                 .forEach {
                                     if (it.myPosition == position) {
                                         it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.play(dataList[position])
+                                        it.mySimpleExoPlayer.play(dataList.viewPagerData[position])
                                     } else {
                                         it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.pause(dataList[position])
+                                        it.mySimpleExoPlayer.pause(dataList.viewPagerData[position])
                                     }
                                 }
                         }
@@ -80,7 +81,7 @@ class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
 
 
     override fun getItemCount(): Int {
-        return listVideoDataList.size
+        return stateModel.getRVData().size
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
@@ -91,17 +92,6 @@ class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
         private val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
         val btnOne: ImageView = v.findViewById(R.id.btnVolume)
         val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
-        var position: Long = C.TIME_UNSET
-        var lastPausedLocation:Long = C.TIME_UNSET
-        init {
-//            PlayerFlags.isMuteLiveData.observeForever {
-//                if (it) {
-//                    btnOne.setImageResource(R.drawable.ic_volume_off)
-//                } else {
-//                    btnOne.setImageResource(R.drawable.ic_volume_up)
-//                }
-//            }
-        }
 
         @SuppressLint("SetTextI18n")
         override fun action(extensionInfo: ExtensionInfo) {
