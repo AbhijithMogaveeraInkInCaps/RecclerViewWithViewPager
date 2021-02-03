@@ -108,7 +108,6 @@ class RecyclerViewPostContainer : RecyclerView {
             else
                 (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         }
-
         if (visibleItemPosition != -1)
             when (state) {
                 SCROLL_STATE_IDLE -> {

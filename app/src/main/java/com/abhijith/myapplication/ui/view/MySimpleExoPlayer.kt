@@ -68,7 +68,6 @@ class MySimpleExoPlayer : PlayerView {
 
     private fun freeMemory() {
         synchronized(this) {
-            Log.e("RecyclerView", "freeing up memory")
             simpleExoPlayer.stop()
             simpleExoPlayer.release()
             player = null
@@ -98,12 +97,11 @@ class MySimpleExoPlayer : PlayerView {
     fun play() {
         synchronized(this) {
             if (!isScrollingFast) {
-                Log.e("RecyclerView", "allocating up memory")
                 PlayerManager.pauseOther(this)
                 init(Uri.parse(""))
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
-                if (PlayerFlags.isMute)
+                if (PlayerFlags.isMuteLiveData.value==true)
                     mute()
             }
         }
@@ -117,10 +115,10 @@ class MySimpleExoPlayer : PlayerView {
         val curentVol = simpleExoPlayer.volume
         if (curentVol == 0f) {
             simpleExoPlayer.volume = 1f
-            return true
+            return PlayerFlags.isMuteLiveData.value!!
         } else {
             simpleExoPlayer.volume = 0f
-            return false
+            return PlayerFlags.isMuteLiveData.value!!
         }
     }
 }

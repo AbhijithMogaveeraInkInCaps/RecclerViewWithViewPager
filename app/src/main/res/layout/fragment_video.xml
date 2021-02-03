@@ -6,6 +6,7 @@
     android:layout_margin="5dp">
 
     <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:gravity="center"
@@ -34,4 +35,13 @@
             app:show_timeout="5000"
             app:use_controller="true" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/thumbNail"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/ll"
+        app:layout_constraintEnd_toEndOf="@id/ll"
+        app:layout_constraintStart_toStartOf="@id/ll"
+        app:layout_constraintTop_toTopOf="@id/ll" />
 </androidx.constraintlayout.widget.ConstraintLayout>

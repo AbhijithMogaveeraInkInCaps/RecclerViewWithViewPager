@@ -10,8 +10,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
-//import com.abhijith.myapplication.ui.viewpager.adapter.PostContentAdapterVP
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 
@@ -38,34 +36,43 @@ class RecyclerViewAdapter :
         super.onViewAttachedToWindow(holder)
         holder.also { VH ->
             VH.vp.apply {
-                adapter = ViewPager2Adapter()
-                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        super.onPageSelected(position)
-                        (adapter as ViewPager2Adapter)
-                            .viewholderList
-                            .forEach {
-                                if (it.myPosition == position) {
-                                    it.mySimpleExoPlayer.play()
-                                } else {
-                                    it.mySimpleExoPlayer.pause()
+                if (adapter == null) {
+                    adapter = ViewPager2Adapter(context)
+
+                    registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                        override fun onPageSelected(position: Int) {
+                            super.onPageSelected(position)
+                            (adapter as ViewPager2Adapter)
+                                .viewHolderList
+                                .forEach {
+                                    if (it.myPosition == position) {
+                                        it.imageView.beInvisible()
+                                        it.mySimpleExoPlayer.play()
+                                    } else {
+                                        it.imageView.beInvisible()
+                                        it.mySimpleExoPlayer.pause()
+                                    }
                                 }
+                        }
+                    })
+
+                    VH.btnOne.setOnClickListener { btn ->
+                        PlayerFlags.isMuteLiveData.postValue(!PlayerFlags.isMuteLiveData.value!!)
+                        PlayerManager.listOFCurrentlyPlatingVideos.forEach {
+                            if (it.mute()) {
+                                VH.btnOne.setImageResource(R.drawable.ic_volume_up)
+                            } else {
+                                VH.btnOne.setImageResource(R.drawable.ic_volume_off)
                             }
-                    }
-                })
-                VH.btnOne.setOnClickListener {btn->
-                    PlayerFlags.isMute = !PlayerFlags.isMute
-                    PlayerManager.listOFCurrentlyPlatingVideos.forEach {
-                        if(it.mute()){
-                            VH.btnOne.setImageResource(R.drawable.ic_volume_up)
-                        }else{
-                            VH.btnOne.setImageResource(R.drawable.ic_volume_off)
                         }
                     }
+
                 }
+
+                VH.dotsIndicator.setViewPager2(VH.vp)
             }
-            VH.dotsIndicator.setViewPager2(VH.vp)
         }
+
         lastClickViewHolder = holder
     }
 
@@ -84,7 +91,13 @@ class RecyclerViewAdapter :
         val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
 
         init {
-
+            PlayerFlags.isMuteLiveData.observeForever {
+                if (it) {
+                    btnOne.setImageResource(R.drawable.ic_volume_off)
+                } else {
+                    btnOne.setImageResource(R.drawable.ic_volume_up)
+                }
+            }
         }
 
         @SuppressLint("SetTextI18n")
@@ -112,13 +125,20 @@ class RecyclerViewAdapter :
                 }
 
                 SelectiveAction.DETACHED -> {
-                    (vp.adapter as ViewPager2Adapter?)!!.abortAllOperation()
                 }
             }
         }
     }
 
 
+}
+
+fun View.beInvisible() {
+    visibility = View.INVISIBLE
+}
+
+fun View.beVisible() {
+    visibility = View.VISIBLE
 }
 
 interface ViewHolderExtension {

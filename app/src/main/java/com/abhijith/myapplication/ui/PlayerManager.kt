@@ -1,5 +1,6 @@
 package com.abhijith.myapplication.ui
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 
@@ -32,4 +33,5 @@ object PlayerManager {
 
 object PlayerFlags{
     var isMute:Boolean=false
+    var isMuteLiveData:MutableLiveData<Boolean> = MutableLiveData()
 }
