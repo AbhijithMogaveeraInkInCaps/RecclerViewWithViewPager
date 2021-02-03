@@ -1,6 +1,7 @@
 package com.abhijith.myapplication.ui.view.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
+import com.google.android.exoplayer2.C
 import com.google.android.material.textview.MaterialTextView
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 
 
-class RecyclerViewAdapter :
+class RecyclerViewAdapter(var listVideoDataList: List<List<VideoData>>) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,16 +32,16 @@ class RecyclerViewAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.myPosition = position
-    }
-
-    override fun onViewAttachedToWindow(holder: ViewHolder) {
-        super.onViewAttachedToWindow(holder)
         holder.also { VH ->
             VH.vp.apply {
                 if (adapter == null) {
-                    adapter = ViewPager2Adapter(context)
+                    val dataList = listVideoDataList[position]
+                    adapter = ViewPager2Adapter(
+                        context, dataList
+                    )
 
-                    registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    registerOnPageChangeCallback(object :
+                        ViewPager2.OnPageChangeCallback() {
                         override fun onPageSelected(position: Int) {
                             super.onPageSelected(position)
                             (adapter as ViewPager2Adapter)
@@ -47,23 +49,20 @@ class RecyclerViewAdapter :
                                 .forEach {
                                     if (it.myPosition == position) {
                                         it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.play()
+                                        it.mySimpleExoPlayer.play(dataList[position])
                                     } else {
                                         it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.pause()
+                                        it.mySimpleExoPlayer.pause(dataList[position])
                                     }
                                 }
                         }
                     })
 
                     VH.btnOne.setOnClickListener { btn ->
-                        PlayerFlags.isMuteLiveData.postValue(!PlayerFlags.isMuteLiveData.value!!)
-                        PlayerManager.listOFCurrentlyPlatingVideos.forEach {
-                            if (it.mute()) {
-                                VH.btnOne.setImageResource(R.drawable.ic_volume_up)
-                            } else {
-                                VH.btnOne.setImageResource(R.drawable.ic_volume_off)
-                            }
+                        PlayerFlags.isMute = !PlayerFlags.isMute;
+                        Log.e("InkInCaps", PlayerFlags.isMute.toString())
+                        PlayerManager.currentMySimpleExoPlayer?.let {
+                            it.mute()
                         }
                     }
 
@@ -72,13 +71,16 @@ class RecyclerViewAdapter :
                 VH.dotsIndicator.setViewPager2(VH.vp)
             }
         }
+    }
 
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        super.onViewAttachedToWindow(holder)
         lastClickViewHolder = holder
     }
 
 
     override fun getItemCount(): Int {
-        return 7
+        return listVideoDataList.size
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
@@ -89,15 +91,16 @@ class RecyclerViewAdapter :
         private val mtvUserName: MaterialTextView = v.findViewById(R.id.mtvLocation)
         val btnOne: ImageView = v.findViewById(R.id.btnVolume)
         val dotsIndicator: WormDotsIndicator = v.findViewById(R.id.dots_indicator)
+        var position: Long = C.TIME_UNSET
 
         init {
-            PlayerFlags.isMuteLiveData.observeForever {
-                if (it) {
-                    btnOne.setImageResource(R.drawable.ic_volume_off)
-                } else {
-                    btnOne.setImageResource(R.drawable.ic_volume_up)
-                }
-            }
+//            PlayerFlags.isMuteLiveData.observeForever {
+//                if (it) {
+//                    btnOne.setImageResource(R.drawable.ic_volume_off)
+//                } else {
+//                    btnOne.setImageResource(R.drawable.ic_volume_up)
+//                }
+//            }
         }
 
         @SuppressLint("SetTextI18n")

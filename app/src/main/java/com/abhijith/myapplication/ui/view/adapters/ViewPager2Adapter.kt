@@ -10,9 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 import com.bumptech.glide.Glide
+import com.google.android.exoplayer2.C
 
 
-class ViewPager2Adapter(val context:Context) : RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
+data class VideoData(val uri: Uri)
+
+class ViewPager2Adapter(val context: Context, val dataList: List<VideoData>) :
+    RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(
@@ -20,22 +24,23 @@ class ViewPager2Adapter(val context:Context) : RecyclerView.Adapter<ViewPager2Ad
         )
     }
 
-    val viewHolderList :MutableList<PostViewHolder> = mutableListOf()
+    val viewHolderList: MutableList<PostViewHolder> = mutableListOf()
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.apply {
             viewHolderList.add(this)
-            var str:String="https://wallpapercave.com/wp/wp1817745.jpg"
+            var str: String = "https://wallpapercave.com/wp/wp1817745.jpg"
             Glide.with(context).load("empty")
                 .thumbnail(Glide.with(context).load(str))
                 .into(imageView);
             myPosition = position
-            val path = "android.resource://" + "com.abhijith.myapplication" + "/" + R.raw.videoplayback
-            mySimpleExoPlayer.init(Uri.parse(path))
+            val path =
+                "android.resource://" + "com.abhijith.myapplication" + "/" + R.raw.videoplayback
+            mySimpleExoPlayer.init(dataList[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return 2
+        return dataList.size
     }
 
     lateinit var currentViewHolder: PostViewHolder
@@ -59,19 +64,20 @@ class ViewPager2Adapter(val context:Context) : RecyclerView.Adapter<ViewPager2Ad
         currentViewHolder.mySimpleExoPlayer.abort()
     }
 
-    fun pauseAllOperations(){
+    fun pauseAllOperations() {
         currentViewHolder.imageView.beVisible()
-        currentViewHolder.mySimpleExoPlayer.pause()
+        currentViewHolder.mySimpleExoPlayer.pause(dataList[currentViewHolder.myPosition])
     }
 
     fun resumeAllOperation() {
         currentViewHolder.imageView.beInvisible()
-        currentViewHolder.mySimpleExoPlayer.play()
+        currentViewHolder.mySimpleExoPlayer.play(dataList[currentViewHolder.myPosition])
     }
 
     class PostViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var myPosition: Int = 0
-        val imageView:ImageView = v.findViewById(R.id.thumbNail)
+        var lastPlayedLocation: Long = C.TIME_UNSET
+        val imageView: ImageView = v.findViewById(R.id.thumbNail)
         val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
     }
 }

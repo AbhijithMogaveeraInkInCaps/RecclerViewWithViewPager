@@ -3,10 +3,11 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
+import com.abhijith.myapplication.ui.view.adapters.VideoData
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -38,15 +39,13 @@ class MySimpleExoPlayer : PlayerView {
     constructor(context: Context?, attrs: AttributeSet?)
             : super(context, attrs)
 
-    constructor(context: Context?, color: Int) : super(context) {
-
-    }
-
     private lateinit var simpleExoPlayer: SimpleExoPlayer
 
     init {
         keepScreenOn = true
     }
+
+    var position: Long = C.TIME_UNSET
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
         val datasourceFactroy: DataSource.Factory =
@@ -54,7 +53,7 @@ class MySimpleExoPlayer : PlayerView {
         return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
     }
 
-    fun init(uri: Uri) {
+    fun init(videoData: VideoData) {
         synchronized(this) {
             val loadControl = DefaultLoadControl()
             val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
@@ -62,7 +61,7 @@ class MySimpleExoPlayer : PlayerView {
             simpleExoPlayer =
                 ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
             player = simpleExoPlayer
-            setUri(Uri.parse(""))
+            setUri(videoData.uri)
         }
     }
 
@@ -88,37 +87,36 @@ class MySimpleExoPlayer : PlayerView {
             if (!isScrollingFast) {
                 simpleExoPlayer.playWhenReady = false
                 simpleExoPlayer.playbackState
-                PlayerManager.removeSelfAndAbort(this)
                 freeMemory()
             }
         }
     }
 
-    fun play() {
+    fun play(videoData: VideoData) {
         synchronized(this) {
             if (!isScrollingFast) {
-                PlayerManager.pauseOther(this)
-                init(Uri.parse(""))
+                PlayerManager.pauseOther(videoData, this)
+                init(videoData)
+                simpleExoPlayer.seekTo(position);
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
-                if (PlayerFlags.isMuteLiveData.value==true)
+                if (PlayerFlags.isMute)
                     mute()
             }
         }
     }
 
-    fun pause() {
+    fun pause(videoData: VideoData) {
+        position = simpleExoPlayer.contentPosition
         abort()
     }
 
-    fun mute(): Boolean {
+    fun mute() {
         val curentVol = simpleExoPlayer.volume
-        if (curentVol == 0f) {
+        if (!PlayerFlags.isMute) {
             simpleExoPlayer.volume = 1f
-            return PlayerFlags.isMuteLiveData.value!!
         } else {
             simpleExoPlayer.volume = 0f
-            return PlayerFlags.isMuteLiveData.value!!
         }
     }
 }
