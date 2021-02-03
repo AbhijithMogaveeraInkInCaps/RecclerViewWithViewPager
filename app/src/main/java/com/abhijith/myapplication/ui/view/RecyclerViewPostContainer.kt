@@ -14,6 +14,8 @@ import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
 import com.abhijith.myapplication.ui.view.adapters.ViewHolderExtension
 
+var isScrollingFast:Boolean=false
+
 class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context!!, attrs, defStyleAttr)
@@ -30,7 +32,6 @@ class RecyclerViewPostContainer : RecyclerView {
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
     private var isScrolledDown = false
     var flag = true
-
     init {
         val function: (t: PlayerManagerEvent) -> Unit = {
             if (flag) {
@@ -86,6 +87,8 @@ class RecyclerViewPostContainer : RecyclerView {
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
         isScrolledDown = dy < 0
+        Log.e("RecyclerView","Fast scrolling start")
+        isScrollingFast = true
     }
 
     var lastScrollFocus: Int = -1
@@ -104,6 +107,8 @@ class RecyclerViewPostContainer : RecyclerView {
         if (visibleItemPosition != -1)
             when (state) {
                 SCROLL_STATE_IDLE -> {
+                    Log.e("RecyclerView","Fast scrolling end")
+                    isScrollingFast = false
                     if (lastScrollFocus != visibleItemPosition) {
                         lastScrollFocus = visibleItemPosition
                         listOfAttachedCandidates.forEach { postViewHolder ->

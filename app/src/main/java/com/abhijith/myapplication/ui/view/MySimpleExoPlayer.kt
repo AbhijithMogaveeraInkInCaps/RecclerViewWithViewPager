@@ -7,13 +7,13 @@ import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
@@ -56,7 +56,7 @@ class MySimpleExoPlayer : PlayerView {
 
     fun init(uri: Uri) {
         synchronized(this) {
-            val loadControl: DefaultLoadControl = DefaultLoadControl()
+            val loadControl = DefaultLoadControl()
             val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter()
             val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
             simpleExoPlayer =
@@ -68,8 +68,10 @@ class MySimpleExoPlayer : PlayerView {
 
     private fun freeMemory() {
         synchronized(this) {
+            Log.e("RecyclerView", "freeing up memory")
             simpleExoPlayer.stop()
             simpleExoPlayer.release()
+            player = null
         }
     }
 
@@ -79,81 +81,39 @@ class MySimpleExoPlayer : PlayerView {
             val mediaSource = buildMediaSourceNew(list[num])
             simpleExoPlayer.playWhenReady = false
             simpleExoPlayer.prepare(mediaSource)
-            simpleExoPlayer.addListener(object : Player.EventListener {
-                override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
-                }
-
-                override fun onTracksChanged(
-                    trackGroups: TrackGroupArray?,
-                    trackSelections: TrackSelectionArray?
-                ) {
-                    Log.e("ExoPlayer","onTracksChanged")
-                }
-
-                override fun onLoadingChanged(isLoading: Boolean) {
-                    Log.e("ExoPlayer","onLoadingChanged")
-                }
-
-                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                    Log.e("ExoPlayer","onPlayerStateChanged")
-                }
-
-                override fun onRepeatModeChanged(repeatMode: Int) {
-                    Log.e("ExoPlayer","onRepeatModeChanged")
-                }
-
-                override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                    Log.e("ExoPlayer","onShuffleModeEnabledChanged")
-                }
-
-                override fun onPlayerError(error: ExoPlaybackException?) {
-                    Log.e("ExoPlayer","onPlayerError")
-                }
-
-                override fun onPositionDiscontinuity(reason: Int) {
-                    Log.e("ExoPlayer","onPositionDiscontinuity")
-                }
-
-                override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
-                    Log.e("ExoPlayer","onPlaybackParametersChanged")
-                }
-
-                override fun onSeekProcessed() {
-                    Log.e("ExoPlayer","onSeekProcessed")
-                }
-
-            })
         }
     }
 
     fun abort() {
         synchronized(this) {
-            simpleExoPlayer.playWhenReady = false
-            simpleExoPlayer.playbackState
-            PlayerManager.removeSelfAndAbort(this)
-            freeMemory()
+            if (!isScrollingFast) {
+                simpleExoPlayer.playWhenReady = false
+                simpleExoPlayer.playbackState
+                PlayerManager.removeSelfAndAbort(this)
+                freeMemory()
+            }
         }
     }
 
     fun play() {
         synchronized(this) {
-            PlayerManager.pauseOther(this)
-            init(Uri.parse(""))
-            simpleExoPlayer.playWhenReady = true
-            simpleExoPlayer.playbackState
-            if(PlayerFlags.isMute)
-                mute()
+            if (!isScrollingFast) {
+                Log.e("RecyclerView", "allocating up memory")
+                PlayerManager.pauseOther(this)
+                init(Uri.parse(""))
+                simpleExoPlayer.playWhenReady = true
+                simpleExoPlayer.playbackState
+                if (PlayerFlags.isMute)
+                    mute()
+            }
         }
     }
 
     fun pause() {
-        simpleExoPlayer.playWhenReady = false
-        simpleExoPlayer.playbackState
-        PlayerManager.removeSelfAndAbort(this)
-        freeMemory()
+        abort()
     }
 
-    fun mute():Boolean {
+    fun mute(): Boolean {
         val curentVol = simpleExoPlayer.volume
         if (curentVol == 0f) {
             simpleExoPlayer.volume = 1f
