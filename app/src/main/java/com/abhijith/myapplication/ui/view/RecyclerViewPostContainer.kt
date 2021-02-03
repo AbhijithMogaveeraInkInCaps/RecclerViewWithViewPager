@@ -14,7 +14,7 @@ import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 import com.abhijith.myapplication.ui.view.adapters.SelectiveAction
 import com.abhijith.myapplication.ui.view.adapters.ViewHolderExtension
 
-var isScrollingFast:Boolean=false
+var isScrollingFast: Boolean = false
 
 class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
@@ -32,6 +32,7 @@ class RecyclerViewPostContainer : RecyclerView {
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
     private var isScrolledDown = false
     var flag = true
+
     init {
         val function: (t: PlayerManagerEvent) -> Unit = {
             if (flag) {
@@ -87,7 +88,7 @@ class RecyclerViewPostContainer : RecyclerView {
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
         isScrolledDown = dy < 0
-        Log.e("RecyclerView","Fast scrolling start")
+        Log.e("RecyclerView", "Fast scrolling start")
         isScrollingFast = true
     }
 
@@ -97,17 +98,21 @@ class RecyclerViewPostContainer : RecyclerView {
         super.onScrollStateChanged(state)
         msg("onScrollStateChanged")
         val visibleItemPosition: Int = if (!isScrolledDown) {
-            (layoutManager as LinearLayoutManager)
-                .findLastCompletelyVisibleItemPosition()
+            if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
+                (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+            else
+                (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         } else {
-            (layoutManager as LinearLayoutManager)
-                .findLastCompletelyVisibleItemPosition()
+            if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
+                (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            else
+                (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         }
 
         if (visibleItemPosition != -1)
             when (state) {
                 SCROLL_STATE_IDLE -> {
-                    Log.e("RecyclerView","Fast scrolling end")
+                    Log.e("RecyclerView", "Fast scrolling end")
                     isScrollingFast = false
                     if (lastScrollFocus != visibleItemPosition) {
                         lastScrollFocus = visibleItemPosition
@@ -132,5 +137,5 @@ class RecyclerViewPostContainer : RecyclerView {
 }
 
 fun msg(str: String) {
-        Log.e("LogMessages", str)
+    Log.e("LogMessages", str)
 }
