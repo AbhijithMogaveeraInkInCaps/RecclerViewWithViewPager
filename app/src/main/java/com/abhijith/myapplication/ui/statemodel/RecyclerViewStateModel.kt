@@ -17,39 +17,63 @@ object RecyclerViewStateModel {
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 2),
+                SubViewHolderData(Uri.parse(""), 3),
             ), 1
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 4),
+                SubViewHolderData(Uri.parse(""), 5),
             ), 2
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 6),
+                SubViewHolderData(Uri.parse(""), 7),
             ), 3
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 8),
+                SubViewHolderData(Uri.parse(""), 9),
             ), 4
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 10),
+                SubViewHolderData(Uri.parse(""), 11),
             ), 5
         ),
         ViewHolderData(
             listOf(
-                SubViewHolderData(Uri.parse(""), 0),
-                SubViewHolderData(Uri.parse(""), 1),
+                SubViewHolderData(Uri.parse(""), 12),
+                SubViewHolderData(Uri.parse(""), 13),
             ), 6
+        ),
+        ViewHolderData(
+            listOf(
+                SubViewHolderData(Uri.parse(""), 14),
+                SubViewHolderData(Uri.parse(""), 15),
+            ), 7
+        ),
+        ViewHolderData(
+            listOf(
+                SubViewHolderData(Uri.parse(""), 16),
+                SubViewHolderData(Uri.parse(""), 17),
+            ), 8
+        ),
+        ViewHolderData(
+            listOf(
+                SubViewHolderData(Uri.parse(""), 17),
+                SubViewHolderData(Uri.parse(""), 18),
+            ), 9
+        ),
+        ViewHolderData(
+            listOf(
+                SubViewHolderData(Uri.parse(""), 19),
+                SubViewHolderData(Uri.parse(""), 20),
+            ), 10
         ),
     )
 
@@ -71,15 +95,16 @@ object RecyclerViewStateModel {
         fun saveLastLocation(pos: Long) {
             if (!this::metadata.isInitialized)
                 metadata = SubViewHolderMetadata(this, pos)
-            list.add(id,metadata.apply {
+            list.add(metadata.apply {
                 lastPlayedLocation = pos
             })
         }
 
-        fun getLastPlayedLocation(): Long = if (this::metadata.isInitialized)
-            list[id].lastPlayedLocation
-        else
-            C.TIME_UNSET
+        fun getLastPlayedLocation(): Long =
+            if (this::metadata.isInitialized)
+                this.metadata.lastPlayedLocation
+            else
+                C.TIME_UNSET
 
     }
 

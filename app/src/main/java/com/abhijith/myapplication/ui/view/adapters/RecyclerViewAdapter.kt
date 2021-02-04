@@ -6,77 +6,71 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.get
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
 import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
-import com.google.android.exoplayer2.C
 import com.google.android.material.textview.MaterialTextView
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 
 
-class RecyclerViewAdapter(val stateModel:RecyclerViewStateModel) :
+class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
     RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            LayoutInflater
-                .from(parent.context)
+            LayoutInflater.from(parent.context)
                 .inflate(R.layout.layour_post, parent, false)
         )
     }
 
-
-    private lateinit var lastClickViewHolder: ViewHolder
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.myPosition = position
+    override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
+        holder.myPosition = pos
         holder.also { VH ->
-            VH.vp.apply {
-                if (adapter == null) {
-                    val dataList = stateModel.getRVData()[position]
-                    adapter = ViewPager2Adapter(
-                        stateModel.getRVData()[position]
-                    )
-
-                    registerOnPageChangeCallback(object :
-                        ViewPager2.OnPageChangeCallback() {
-                        override fun onPageSelected(position: Int) {
-                            super.onPageSelected(position)
-                            (adapter as ViewPager2Adapter)
-                                .viewHolderList
-                                .forEach {
-                                    if (it.myPosition == position) {
-                                        it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.play(dataList.viewPagerData[position])
-                                    } else {
-                                        it.imageView.beInvisible()
-                                        it.mySimpleExoPlayer.pause(dataList.viewPagerData[position])
-                                    }
+            VH.vp.also { vp2 ->
+                val dataList = stateModel.getRVData()[pos]
+                vp2.adapter = ViewPager2Adapter(stateModel.getRVData()[pos])
+                vp2.registerOnPageChangeCallback(object :
+                    ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        (vp2.adapter as ViewPager2Adapter).also { vp2Adapter ->
+                            vp2Adapter.currentViewHolder = vp2Adapter.viewHolderList[position]
+                        }
+                        (vp2.adapter as ViewPager2Adapter)
+                            .viewHolderList
+                            .forEach {
+                                if (it.myPosition == position) {
+                                    Log.e("Lion",dataList.viewPagerData[position].id.toString())
+                                    it.imageView.beInvisible()
+                                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
+                                } else {
+//                                    Log.e("Lion",dataList.viewPagerData[position].id.toString())
+                                    it.imageView.beInvisible()
+                                    it.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
                                 }
-                        }
-                    })
-
-                    VH.btnOne.setOnClickListener { btn ->
-                        PlayerFlags.isMute = !PlayerFlags.isMute;
-                        Log.e("InkInCaps", PlayerFlags.isMute.toString())
-                        PlayerManager.currentMySimpleExoPlayer?.let {
-                            it.mute()
-                        }
+                            }
                     }
+                })
 
+                VH.btnOne.setOnClickListener { btn ->
+                    PlayerFlags.isMute = !PlayerFlags.isMute;
+                    Log.e("InkInCaps", PlayerFlags.isMute.toString())
+                    PlayerManager.currentMySimpleExoPlayer?.let {
+                        it.mute()
+                    }
                 }
-
-                VH.dotsIndicator.setViewPager2(VH.vp)
             }
+            VH.dotsIndicator.setViewPager2(VH.vp)
         }
     }
 
     override fun onViewAttachedToWindow(holder: ViewHolder) {
         super.onViewAttachedToWindow(holder)
-        lastClickViewHolder = holder
     }
 
 

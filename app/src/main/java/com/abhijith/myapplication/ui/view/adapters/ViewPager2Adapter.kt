@@ -1,5 +1,6 @@
 package com.abhijith.myapplication.ui.view.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,9 @@ import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.C
 
 
-class ViewPager2Adapter(val model:RecyclerViewStateModel.ViewHolderData) :
-    RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
+class ViewPager2Adapter(
+    val model: RecyclerViewStateModel.ViewHolderData
+) : RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         return PostViewHolder(
@@ -22,17 +24,13 @@ class ViewPager2Adapter(val model:RecyclerViewStateModel.ViewHolderData) :
     }
 
     val viewHolderList: MutableList<PostViewHolder> = mutableListOf()
+
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.apply {
             viewHolderList.add(this)
-            var str: String = "https://wallpapercave.com/wp/wp1817745.jpg"
-            Glide.with(RecyclerViewStateModel.applicationContext).load("empty")
-                .thumbnail(Glide.with(RecyclerViewStateModel.applicationContext).load(str))
-                .into(imageView);
+            imageView.loadThumbNail("https://wallpapercave.com/wp/wp1817745.jpg")
             myPosition = position
-            val path =
-                "android.resource://" + "com.abhijith.myapplication" + "/" + R.raw.videoplayback
-            mySimpleExoPlayer.init(model.viewPagerData[position])
+            setData(model.viewPagerData[position])
         }
     }
 
@@ -42,9 +40,77 @@ class ViewPager2Adapter(val model:RecyclerViewStateModel.ViewHolderData) :
 
     lateinit var currentViewHolder: PostViewHolder
 
-    override fun onViewAttachedToWindow(holder: PostViewHolder) {
+    fun pauseAllOperations() {
+        currentViewHolder.imageView.beVisible()
+        currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
+    }
+
+    fun resumeAllOperation() {
+        currentViewHolder.imageView.beInvisible()
+        currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
+    }
+
+    class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
+        private lateinit var vData: RecyclerViewStateModel.SubViewHolderData
+        override fun action(extensionInfo: ExtensionInfo) {
+            when (extensionInfo.action) {
+
+                SelectiveAction.NONE -> {
+
+                }
+
+                SelectiveAction.ATTACHED_WIN -> {
+                    if (this::vData.isInitialized) {
+                        Log.e("Viewholder", "WIN${vData.id}")
+//                        mySimpleExoPlayer.init(vData)
+                        mySimpleExoPlayer.play(vData)
+                    } else {
+//                        Log.e("Viewholder","data not yet init play")
+                    }
+
+                }
+
+                SelectiveAction.ATTACHED_LOST -> {
+//                    Log.e("Viewholder", "Lost")
+                    if (this::vData.isInitialized) {
+                        Log.e("Viewholder", "LOST${vData.id}")
+                        mySimpleExoPlayer.pause(vData)
+                    } else
+                        Log.e("Viewholder", "data not yet init pause")
+                }
+
+                SelectiveAction.ATTACHED_CANDIDATE -> {
+
+                }
+
+                SelectiveAction.DETACHED -> {
+
+                }
+            }
+        }
+
+        fun setData(data: RecyclerViewStateModel.SubViewHolderData) {
+            vData = data
+            mySimpleExoPlayer.init(vData)
+        }
+
+        var myPosition: Int = 0
+        var lastPlayedLocation: Long = C.TIME_UNSET
+        val imageView: ImageView = v.findViewById(R.id.thumbNail)
+        private val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
+    }
+}
+
+fun ImageView.loadThumbNail(string: String) {
+    Glide.with(RecyclerViewStateModel.applicationContext).load("empty")
+        .thumbnail(Glide.with(RecyclerViewStateModel.applicationContext).load(string))
+        .into(this);
+}
+
+
+/*
+*    override fun onViewAttachedToWindow(holder: PostViewHolder) {
         super.onViewAttachedToWindow(holder)
-        currentViewHolder = holder
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -57,25 +123,6 @@ class ViewPager2Adapter(val model:RecyclerViewStateModel.ViewHolderData) :
     }
 
     fun abortAllOperation() {
-        currentViewHolder.imageView.beVisible()
-        currentViewHolder.mySimpleExoPlayer.abort()
-    }
-
-    fun pauseAllOperations() {
-        currentViewHolder.imageView.beVisible()
-        currentViewHolder.mySimpleExoPlayer.pause(model.viewPagerData[currentViewHolder.myPosition])
-    }
-
-    fun resumeAllOperation() {
-        currentViewHolder.imageView.beInvisible()
-        currentViewHolder.mySimpleExoPlayer.play(model.viewPagerData[currentViewHolder.myPosition])
-    }
-
-    class PostViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var myPosition: Int = 0
-        var lastPlayedLocation: Long = C.TIME_UNSET
-        val imageView: ImageView = v.findViewById(R.id.thumbNail)
-        val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
-    }
-}
-
+//        currentViewHolder.imageView.beVisible()
+//        currentViewHolder.mySimpleExoPlayer.abort(model.viewPagerData[currentViewHolder.myPosition])
+    }*/

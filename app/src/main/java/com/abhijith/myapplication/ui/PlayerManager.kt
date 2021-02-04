@@ -11,7 +11,7 @@ enum class PlayerManagerEvent {
 
 object PlayerManager {
     var currentMySimpleExoPlayer: MySimpleExoPlayer? = null
-    var currentMySimpleExoPlayerOwnerData: RecyclerViewStateModel.SubViewHolderData? = null
+    private var currentMySimpleExoPlayerOwnerData: RecyclerViewStateModel.SubViewHolderData? = null
     val liveData: MutableLiveData<PlayerManagerEvent> = MutableLiveData()
 
     fun pauseOther(owner: RecyclerViewStateModel.SubViewHolderData,player: MySimpleExoPlayer) {
