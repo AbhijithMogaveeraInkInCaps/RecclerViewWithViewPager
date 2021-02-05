@@ -9,6 +9,7 @@ import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
 import com.abhijith.myapplication.ui.view.adapters.RecyclerViewAdapter
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

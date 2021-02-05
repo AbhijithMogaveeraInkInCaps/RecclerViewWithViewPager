@@ -1,13 +1,10 @@
 package com.abhijith.myapplication.ui.view.adapters
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.get
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.abhijith.myapplication.R
@@ -48,7 +45,6 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
                                     it.imageView.beInvisible()
                                     it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
                                 } else {
-//                                    Log.e("Lion",dataList.viewPagerData[position].id.toString())
                                     it.imageView.beInvisible()
                                     it.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
                                 }
@@ -58,17 +54,11 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
 
                 VH.btnOne.setOnClickListener { btn ->
                     PlayerFlags.isMute = !PlayerFlags.isMute;
-                    PlayerManager.currentMySimpleExoPlayer?.let {
-                        it.mute()
-                    }
+                    PlayerManager.currentMySimpleExoPlayer?.mute()
                 }
             }
             VH.dotsIndicator.setViewPager2(VH.vp)
         }
-    }
-
-    override fun onViewAttachedToWindow(holder: ViewHolder) {
-        super.onViewAttachedToWindow(holder)
     }
 
 

@@ -17,10 +17,6 @@ import com.google.android.exoplayer2.C
 
 var isScrollingFast: Boolean = false
 
-data class RecyclerViewMetaData(
-    var pausedLocation: Long = C.TIME_UNSET
-)
-
 class RecyclerViewPostContainer : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
             : super(context!!, attrs, defStyleAttr)
@@ -37,21 +33,17 @@ class RecyclerViewPostContainer : RecyclerView {
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
 
     companion object {
-        var detachedCandidateTop: Long = C.TIME_UNSET
         var isScrolledDownn = false
         var isScrolled = false
-        var detachedCandidateBottom: Long = C.TIME_UNSET
     }
 
 
-    var flag = true
-
+    private var flag = true
     init {
         val function: (t: PlayerManagerEvent) -> Unit = {
             if (flag) {
                 flag = false
                 listOfAttachedCandidates.forEach { postViewHolder ->
-
                     (postViewHolder as ViewHolderExtension).apply {
                         action(
                             if (postViewHolder.myPosition == 0)
@@ -82,7 +74,6 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
-        msg("onChildDetachedFromWindow")
         if(!isScrolledDownn)
             Log.e("AloorT", "Aloor ${MySimpleExoPlayer.position}")
         MySimpleExoPlayer.position = C.TIME_UNSET
@@ -110,7 +101,6 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
-        msg("onScrollStateChanged")
         val visibleItemPosition: Int = if (!isScrolledDownn) {
             if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
                 (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
@@ -149,6 +139,3 @@ class RecyclerViewPostContainer : RecyclerView {
     }
 }
 
-fun msg(str: String) {
-    Log.e("LogMessages", str)
-}

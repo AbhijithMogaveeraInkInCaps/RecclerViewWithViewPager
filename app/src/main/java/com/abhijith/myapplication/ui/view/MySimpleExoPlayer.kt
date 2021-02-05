@@ -3,7 +3,6 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
@@ -51,9 +50,9 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
-        val datasourceFactroy: DataSource.Factory =
+        val dataSourceFactory: DataSource.Factory =
             DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
-        return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
+        return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
     }
 
     private fun init(owner: RecyclerViewStateModel.SubViewHolderData) {
