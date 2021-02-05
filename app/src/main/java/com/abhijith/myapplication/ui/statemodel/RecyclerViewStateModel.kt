@@ -86,25 +86,25 @@ object RecyclerViewStateModel {
         var id: Int
     )
 
-    private val list: MutableList<SubViewHolderMetadata> = mutableListOf()
+//    private val list: MutableList<SubViewHolderMetadata> = mutableListOf()
 
     data class SubViewHolderData(val uri: Uri, var id: Int) {
 
-        lateinit var metadata: SubViewHolderMetadata
+//        lateinit var metadata: SubViewHolderMetadata
 
-        fun saveLastLocation(pos: Long) {
-            if (!this::metadata.isInitialized)
-                metadata = SubViewHolderMetadata(this, pos)
-            list.add(metadata.apply {
-                lastPlayedLocation = pos
-            })
-        }
+//        fun saveLastLocation(pos: Long) {
+//            if (!this::metadata.isInitialized)
+//                metadata = SubViewHolderMetadata(this, pos)
+//            list.add(metadata.apply {
+//                lastPlayedLocation = pos
+//            })
+//        }
 
-        fun getLastPlayedLocation(): Long =
-            if (this::metadata.isInitialized)
-                this.metadata.lastPlayedLocation
-            else
-                C.TIME_UNSET
+//        fun getLastPlayedLocation(): Long =
+//            if (this::metadata.isInitialized)
+//                this.metadata.lastPlayedLocation
+//            else
+//                C.TIME_UNSET
 
     }
 

@@ -41,7 +41,7 @@ class ViewPager2Adapter(
     lateinit var currentViewHolder: PostViewHolder
 
     fun pauseAllOperations() {
-        currentViewHolder.imageView.beVisible()
+//        currentViewHolder.imageView.beVisible()
         currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
     }
 
