@@ -106,7 +106,7 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {
-
+                    (vp.adapter as ViewPager2Adapter?)!!.initAndSeekToOne()
                 }
 
                 SelectiveAction.DETACHED -> {
@@ -124,7 +124,7 @@ fun View.beInvisible() {
 }
 
 fun View.beVisible() {
-    visibility = View.VISIBLE
+    visibility = View.INVISIBLE
 }
 
 interface ViewHolderExtension {

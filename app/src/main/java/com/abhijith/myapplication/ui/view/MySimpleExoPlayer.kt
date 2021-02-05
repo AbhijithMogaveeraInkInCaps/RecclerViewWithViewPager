@@ -177,4 +177,12 @@ class MySimpleExoPlayer : PlayerView {
             simpleExoPlayer.volume = 0f
         }
     }
+
+    fun allocateMemoryAndBeReady(owner: RecyclerViewStateModel.SubViewHolderData) {
+        if (isThereAnyNeedToReInit) {
+            isThereAnyNeedToReInit = false
+            init(owner)
+            simpleExoPlayer.seekTo(1)
+        }
+    }
 }

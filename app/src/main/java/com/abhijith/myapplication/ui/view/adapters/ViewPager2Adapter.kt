@@ -56,8 +56,14 @@ class ViewPager2Adapter(
         }
     }
 
+    fun initAndSeekToOne() {
+        viewHolderList.forEach {
+            it.mySimpleExoPlayer.allocateMemoryAndBeReady(it.vData)
+        }
+    }
+
     class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
-        private lateinit var vData: RecyclerViewStateModel.SubViewHolderData
+        lateinit var vData: RecyclerViewStateModel.SubViewHolderData
         override fun action(extensionInfo: ExtensionInfo) {
             when (extensionInfo.action) {
 
