@@ -123,7 +123,7 @@ fun View.beInvisible() {
 }
 
 fun View.beVisible() {
-    visibility = View.INVISIBLE
+    visibility = View.VISIBLE
 }
 
 interface ViewHolderExtension {

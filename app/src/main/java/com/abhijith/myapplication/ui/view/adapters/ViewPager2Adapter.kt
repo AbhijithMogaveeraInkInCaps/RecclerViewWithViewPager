@@ -41,7 +41,7 @@ class ViewPager2Adapter(
     lateinit var currentViewHolder: PostViewHolder
 
     fun pauseAllOperations() {
-//        currentViewHolder.imageView.beVisible()
+        currentViewHolder.imageView.beVisible()
         currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
     }
 
@@ -61,7 +61,6 @@ class ViewPager2Adapter(
 
                 SelectiveAction.ATTACHED_WIN -> {
                     if (this::vData.isInitialized) {
-                        Log.e("Viewholder", "WIN${vData.id}")
                         mySimpleExoPlayer.play(vData)
                     }
 
@@ -69,7 +68,6 @@ class ViewPager2Adapter(
 
                 SelectiveAction.ATTACHED_LOST -> {
                     if (this::vData.isInitialized) {
-                        Log.e("Viewholder", "LOST${vData.id}")
                         mySimpleExoPlayer.pause(vData)
                     }
                 }
