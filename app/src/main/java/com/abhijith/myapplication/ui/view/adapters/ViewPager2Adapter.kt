@@ -50,6 +50,12 @@ class ViewPager2Adapter(
         currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
     }
 
+    fun freeMemory() {
+        viewHolderList.forEach {
+            it.mySimpleExoPlayer.freeMemory()
+        }
+    }
+
     class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
         private lateinit var vData: RecyclerViewStateModel.SubViewHolderData
         override fun action(extensionInfo: ExtensionInfo) {
@@ -90,7 +96,7 @@ class ViewPager2Adapter(
         var myPosition: Int = 0
         var lastPlayedLocation: Long = C.TIME_UNSET
         val imageView: ImageView = v.findViewById(R.id.thumbNail)
-        private val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
+        val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
     }
 }
 

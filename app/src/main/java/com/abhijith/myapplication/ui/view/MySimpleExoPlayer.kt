@@ -3,18 +3,18 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
 import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
@@ -40,6 +40,7 @@ class MySimpleExoPlayer : PlayerView {
             : super(context, attrs)
 
     private lateinit var simpleExoPlayer: SimpleExoPlayer
+    var isThereAnyNeedToReInit:Boolean=true
 
     init {
         keepScreenOn = true
@@ -50,7 +51,8 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
-        val datasourceFactroy: DataSource.Factory = DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
+        val datasourceFactroy: DataSource.Factory =
+            DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
         return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
     }
 
@@ -58,18 +60,67 @@ class MySimpleExoPlayer : PlayerView {
         synchronized(this) {
             val loadControl = DefaultLoadControl()
             val bandwidthMeter = DefaultBandwidthMeter()
-            val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
-            simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
+            val trackSelector =
+                DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+            simpleExoPlayer =
+                ExoPlayerFactory.newSimpleInstance(context, trackSelector, loadControl)
             player = simpleExoPlayer
             setUri(owner)
+            simpleExoPlayer.addListener(object : Player.EventListener {
+                override fun onTimelineChanged(
+                    timeline: Timeline?,
+                    manifest: Any?,
+                    reason: Int
+                ) {
+
+                }
+
+                override fun onTracksChanged(
+                    trackGroups: TrackGroupArray?,
+                    trackSelections: TrackSelectionArray?
+                ) {
+
+                }
+
+                override fun onLoadingChanged(isLoading: Boolean) {
+
+                }
+
+                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+
+                }
+
+                override fun onRepeatModeChanged(repeatMode: Int) {
+                }
+
+                override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                }
+
+                override fun onPlayerError(error: ExoPlaybackException?) {
+                    freeMemory()
+                }
+
+                override fun onPositionDiscontinuity(reason: Int) {
+                }
+
+                override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+                }
+
+                override fun onSeekProcessed() {
+                }
+            })
+//            }
         }
     }
 
-    private fun freeMemory() {
+    fun freeMemory() {
         synchronized(this) {
-            simpleExoPlayer.stop()
-            simpleExoPlayer.release()
-            player = null
+            if (!isThereAnyNeedToReInit) {
+                simpleExoPlayer.stop()
+                simpleExoPlayer.release()
+                player = null
+                isThereAnyNeedToReInit = true
+            }
         }
     }
 
@@ -85,7 +136,7 @@ class MySimpleExoPlayer : PlayerView {
     fun abort(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
             if (!isScrollingFast) {
-                if (this::simpleExoPlayer.isInitialized) {
+                if (!isThereAnyNeedToReInit) {
 //                    owner.saveLastLocation(simpleExoPlayer.contentPosition)
                     simpleExoPlayer.playWhenReady = false
                     simpleExoPlayer.playbackState
@@ -99,7 +150,8 @@ class MySimpleExoPlayer : PlayerView {
         synchronized(this) {
             if (!isScrollingFast) {
                 PlayerManager.pauseOther(owner, this)
-                if (!this::simpleExoPlayer.isInitialized) {
+                if (isThereAnyNeedToReInit) {
+                    isThereAnyNeedToReInit = false
                     init(owner)
                 }
                 simpleExoPlayer.playWhenReady = true

@@ -110,6 +110,7 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
                 }
 
                 SelectiveAction.DETACHED -> {
+                    (vp.adapter as ViewPager2Adapter?)!!.freeMemory()
                 }
             }
         }
