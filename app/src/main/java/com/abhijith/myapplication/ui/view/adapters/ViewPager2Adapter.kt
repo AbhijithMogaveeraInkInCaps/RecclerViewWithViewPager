@@ -62,21 +62,16 @@ class ViewPager2Adapter(
                 SelectiveAction.ATTACHED_WIN -> {
                     if (this::vData.isInitialized) {
                         Log.e("Viewholder", "WIN${vData.id}")
-//                        mySimpleExoPlayer.init(vData)
                         mySimpleExoPlayer.play(vData)
-                    } else {
-//                        Log.e("Viewholder","data not yet init play")
                     }
 
                 }
 
                 SelectiveAction.ATTACHED_LOST -> {
-//                    Log.e("Viewholder", "Lost")
                     if (this::vData.isInitialized) {
                         Log.e("Viewholder", "LOST${vData.id}")
                         mySimpleExoPlayer.pause(vData)
-                    } else
-                        Log.e("Viewholder", "data not yet init pause")
+                    }
                 }
 
                 SelectiveAction.ATTACHED_CANDIDATE -> {
@@ -91,7 +86,7 @@ class ViewPager2Adapter(
 
         fun setData(data: RecyclerViewStateModel.SubViewHolderData) {
             vData = data
-            mySimpleExoPlayer.init(vData)
+            mySimpleExoPlayer.play(vData)
         }
 
         var myPosition: Int = 0

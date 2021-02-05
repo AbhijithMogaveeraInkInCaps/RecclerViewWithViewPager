@@ -45,7 +45,6 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
                             .viewHolderList
                             .forEach {
                                 if (it.myPosition == position) {
-                                    Log.e("Lion",dataList.viewPagerData[position].id.toString())
                                     it.imageView.beInvisible()
                                     it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
                                 } else {
@@ -59,7 +58,6 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
 
                 VH.btnOne.setOnClickListener { btn ->
                     PlayerFlags.isMute = !PlayerFlags.isMute;
-                    Log.e("InkInCaps", PlayerFlags.isMute.toString())
                     PlayerManager.currentMySimpleExoPlayer?.let {
                         it.mute()
                     }
@@ -125,7 +123,7 @@ fun View.beInvisible() {
 }
 
 fun View.beVisible() {
-    visibility = View.VISIBLE
+    visibility = View.INVISIBLE
 }
 
 interface ViewHolderExtension {

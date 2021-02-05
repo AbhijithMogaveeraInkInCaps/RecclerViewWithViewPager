@@ -3,7 +3,6 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
@@ -51,14 +50,12 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     private fun buildMediaSourceNew(uri: Uri): MediaSource? {
-        val datasourceFactroy: DataSource.Factory =
-            DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
+        val datasourceFactroy: DataSource.Factory = DefaultDataSourceFactory(context, Util.getUserAgent(context, "myapplication"))
         return ExtractorMediaSource.Factory(datasourceFactroy).createMediaSource(uri)
     }
 
-    fun init(owner: RecyclerViewStateModel.SubViewHolderData) {
+    private fun init(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
-//            Log.e("MySimpleExoPlayer","init[${owner.id}]")
             val loadControl = DefaultLoadControl()
             val bandwidthMeter = DefaultBandwidthMeter()
             val trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
@@ -88,11 +85,12 @@ class MySimpleExoPlayer : PlayerView {
     fun abort(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
             if (!isScrollingFast) {
-                Log.e("MySimpleExoPlayer","abort[${owner.id}]")
-                owner.saveLastLocation(simpleExoPlayer.contentPosition)
-                simpleExoPlayer.playWhenReady = false
-                simpleExoPlayer.playbackState
-                freeMemory()
+                if (this::simpleExoPlayer.isInitialized) {
+//                    owner.saveLastLocation(simpleExoPlayer.contentPosition)
+                    simpleExoPlayer.playWhenReady = false
+                    simpleExoPlayer.playbackState
+//                    freeMemory()
+                }
             }
         }
     }
@@ -100,15 +98,15 @@ class MySimpleExoPlayer : PlayerView {
     fun play(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
             if (!isScrollingFast) {
-                Log.e("MySimpleExoPlayer","play[${owner.id}]")
                 PlayerManager.pauseOther(owner, this)
-                init(owner)
+                if (!this::simpleExoPlayer.isInitialized) {
+                    init(owner)
+                }
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
-                if (owner.getLastPlayedLocation() != C.TIME_UNSET){
-                    simpleExoPlayer.seekTo(owner.getLastPlayedLocation())
-                    Log.e("DOG", owner.id.toString())
-                }
+//                if (owner.getLastPlayedLocation() != C.TIME_UNSET) {
+//                    simpleExoPlayer.seekTo(owner.getLastPlayedLocation())
+//                }
                 if (PlayerFlags.isMute)
                     mute()
             }
