@@ -3,10 +3,12 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
 import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
+import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isJustStarted
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -108,7 +110,6 @@ class MySimpleExoPlayer : PlayerView {
                 override fun onSeekProcessed() {
                 }
             })
-//            }
         }
     }
 
@@ -134,12 +135,10 @@ class MySimpleExoPlayer : PlayerView {
 
     fun abort(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
-            if (!isScrollingFast) {
+            if (!isScrollingFast||isJustStarted) {
                 if (!isThereAnyNeedToReInit) {
-//                    owner.saveLastLocation(simpleExoPlayer.contentPosition)
                     simpleExoPlayer.playWhenReady = false
                     simpleExoPlayer.playbackState
-//                    freeMemory()
                 }
             }
         }
@@ -147,7 +146,7 @@ class MySimpleExoPlayer : PlayerView {
 
     fun play(owner: RecyclerViewStateModel.SubViewHolderData) {
         synchronized(this) {
-            if (!isScrollingFast) {
+            if (!isScrollingFast|| isJustStarted) {
                 PlayerManager.pauseOther(owner, this)
                 if (isThereAnyNeedToReInit) {
                     isThereAnyNeedToReInit = false
@@ -155,9 +154,6 @@ class MySimpleExoPlayer : PlayerView {
                 }
                 simpleExoPlayer.playWhenReady = true
                 simpleExoPlayer.playbackState
-//                if (owner.getLastPlayedLocation() != C.TIME_UNSET) {
-//                    simpleExoPlayer.seekTo(owner.getLastPlayedLocation())
-//                }
                 if (PlayerFlags.isMute)
                     mute()
             }
@@ -169,7 +165,6 @@ class MySimpleExoPlayer : PlayerView {
     }
 
     fun mute() {
-        val curentVol = simpleExoPlayer.volume
         if (!PlayerFlags.isMute) {
             simpleExoPlayer.volume = 1f
         } else {

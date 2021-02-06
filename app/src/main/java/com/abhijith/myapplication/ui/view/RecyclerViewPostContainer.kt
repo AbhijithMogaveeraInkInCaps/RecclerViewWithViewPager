@@ -2,7 +2,6 @@ package com.abhijith.myapplication.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,26 +32,31 @@ class RecyclerViewPostContainer : RecyclerView {
     private val listOfAttachedCandidates = mutableListOf<RecyclerViewAdapter.ViewHolder>()
 
     companion object {
-        var isScrolledDownn = false
+        var isScrolledDown = false
         var isScrolled = false
+        var isJustStarted:Boolean = true
     }
 
 
-    private var flag = true
+    private var flag = 2
+
     init {
         val function: (t: PlayerManagerEvent) -> Unit = {
-            if (flag) {
-                flag = false
-                listOfAttachedCandidates.forEach { postViewHolder ->
-                    (postViewHolder as ViewHolderExtension).apply {
-                        action(
-                            if (postViewHolder.myPosition == 0)
-                                ExtensionInfo(SelectiveAction.ATTACHED_WIN)
-                            else
-                                ExtensionInfo(SelectiveAction.ATTACHED_LOST)
-                        )
+            if (flag!=0) {
+                flag--
+                listOfAttachedCandidates
+                    .forEach { postViewHolder ->
+                        (postViewHolder as ViewHolderExtension).apply {
+                            action(
+                                if (postViewHolder.myPosition == 0) {
+                                    ExtensionInfo(SelectiveAction.ATTACHED_WIN)
+                                }else
+                                    ExtensionInfo(SelectiveAction.ATTACHED_LOST)
+                            )
+                        }
                     }
-                }
+            }else{
+                isJustStarted = false
             }
         }
         PlayerManager.liveData.observeForever(function)
@@ -74,8 +78,6 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onChildDetachedFromWindow(child: View) {
         super.onChildDetachedFromWindow(child)
-        if(!isScrolledDownn)
-            Log.e("AloorT", "Aloor ${MySimpleExoPlayer.position}")
         MySimpleExoPlayer.position = C.TIME_UNSET
         val childViewHolder = getChildViewHolder(child)
         if (childViewHolder is RecyclerViewAdapter.ViewHolder) {
@@ -91,8 +93,7 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onScrolled(@Px dx: Int, @Px dy: Int) {
         super.onScrolled(dx, dy)
-        isScrolledDownn = dy < 0
-        Log.e("RecyclerView", "Fast scrolling start")
+        isScrolledDown = dy < 0
         isScrollingFast = true
         isScrolled = true
     }
@@ -101,7 +102,8 @@ class RecyclerViewPostContainer : RecyclerView {
 
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
-        val visibleItemPosition: Int = if (!isScrolledDownn) {
+
+        val visibleItemPosition: Int = if (!isScrolledDown) {
             if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
                 (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
             else
@@ -112,10 +114,10 @@ class RecyclerViewPostContainer : RecyclerView {
             else
                 (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
         }
+
         if (visibleItemPosition != -1)
             when (state) {
                 SCROLL_STATE_IDLE -> {
-                    Log.e("RecyclerView", "Fast scrolling end")
                     isScrollingFast = false
                     if (lastScrollFocus != visibleItemPosition) {
                         lastScrollFocus = visibleItemPosition

@@ -111,23 +111,3 @@ fun ImageView.loadThumbNail(string: String) {
         .thumbnail(Glide.with(RecyclerViewStateModel.applicationContext).load(string))
         .into(this);
 }
-
-
-/*
-*    override fun onViewAttachedToWindow(holder: PostViewHolder) {
-        super.onViewAttachedToWindow(holder)
-    }
-
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-
-    }
-
-    override fun onViewDetachedFromWindow(holder: PostViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-    }
-
-    fun abortAllOperation() {
-//        currentViewHolder.imageView.beVisible()
-//        currentViewHolder.mySimpleExoPlayer.abort(model.viewPagerData[currentViewHolder.myPosition])
-    }*/

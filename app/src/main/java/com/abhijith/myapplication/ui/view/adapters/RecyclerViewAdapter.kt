@@ -29,7 +29,6 @@ class RecyclerViewAdapter(val stateModel: RecyclerViewStateModel) :
         holder.myPosition = pos
         holder.also { VH ->
             VH.vp.also { vp2 ->
-                val dataList = stateModel.getRVData()[pos]
                 vp2.adapter = ViewPager2Adapter(stateModel.getRVData()[pos])
                 vp2.registerOnPageChangeCallback(object :
                     ViewPager2.OnPageChangeCallback() {
