@@ -3,11 +3,10 @@ package com.abhijith.myapplication.ui.view
 import android.content.Context
 import android.net.Uri
 import android.util.AttributeSet
-import android.util.Log
 import com.abhijith.myapplication.R
 import com.abhijith.myapplication.ui.PlayerFlags
 import com.abhijith.myapplication.ui.PlayerManager
-import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
+import com.abhijith.myapplication.ui.data.SubViewHolderData
 import com.abhijith.myapplication.ui.view.RecyclerViewPostContainer.Companion.isJustStarted
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -41,7 +40,7 @@ class MySimpleExoPlayer : PlayerView {
             : super(context, attrs)
 
     private lateinit var simpleExoPlayer: SimpleExoPlayer
-    var isThereAnyNeedToReInit:Boolean=true
+    var isThereAnyNeedToReInit: Boolean = true
 
     init {
         keepScreenOn = true
@@ -57,7 +56,7 @@ class MySimpleExoPlayer : PlayerView {
         return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
     }
 
-    private fun init(owner: RecyclerViewStateModel.SubViewHolderData) {
+    private fun init(owner: SubViewHolderData) {
         synchronized(this) {
             val loadControl = DefaultLoadControl()
             val bandwidthMeter = DefaultBandwidthMeter()
@@ -124,7 +123,7 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    private fun setUri(owner: RecyclerViewStateModel.SubViewHolderData) {
+    private fun setUri(owner: SubViewHolderData) {
         synchronized(this) {
             val num = Random.nextInt(0, 4)
             val mediaSource = buildMediaSourceNew(list[num])
@@ -133,9 +132,9 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun abort(owner: RecyclerViewStateModel.SubViewHolderData) {
+    fun abort(owner: SubViewHolderData) {
         synchronized(this) {
-            if (!isScrollingFast||isJustStarted) {
+            if (!isScrollingFast || isJustStarted) {
                 if (!isThereAnyNeedToReInit) {
                     simpleExoPlayer.playWhenReady = false
                     simpleExoPlayer.playbackState
@@ -144,9 +143,9 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun play(owner: RecyclerViewStateModel.SubViewHolderData) {
+    fun play(owner: SubViewHolderData) {
         synchronized(this) {
-            if (!isScrollingFast|| isJustStarted) {
+            if (!isScrollingFast || isJustStarted) {
                 PlayerManager.pauseOther(owner, this)
                 if (isThereAnyNeedToReInit) {
                     isThereAnyNeedToReInit = false
@@ -160,7 +159,7 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun pause(owner: RecyclerViewStateModel.SubViewHolderData) {
+    fun pause(owner: SubViewHolderData) {
         abort(owner)
     }
 
@@ -172,7 +171,7 @@ class MySimpleExoPlayer : PlayerView {
         }
     }
 
-    fun allocateMemoryAndBeReady(owner: RecyclerViewStateModel.SubViewHolderData) {
+    fun allocateMemoryAndBeReady(owner: SubViewHolderData) {
         if (isThereAnyNeedToReInit) {
             isThereAnyNeedToReInit = false
             init(owner)

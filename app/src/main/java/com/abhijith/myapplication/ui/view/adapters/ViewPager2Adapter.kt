@@ -1,36 +1,77 @@
 package com.abhijith.myapplication.ui.view.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.abhijith.myapplication.R
-import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
+import com.abhijith.myapplication.ui.data.DataType
+import com.abhijith.myapplication.ui.data.SubViewHolderData
+import com.abhijith.myapplication.ui.data.ViewHolderData
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.C
 
 
 class ViewPager2Adapter(
-    val model: RecyclerViewStateModel.ViewHolderData
-) : RecyclerView.Adapter<ViewPager2Adapter.PostViewHolder>() {
+    private val model: ViewHolderData
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        return PostViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.fragment_video, parent, false)
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView.ViewHolder {
+        return when (viewType) {
+
+            VIEW_TYPE_VIDEO -> {
+                PostVideoViewHolder(
+                    LayoutInflater
+                        .from(parent.context)
+                        .inflate(R.layout.fragment_video, parent, false)
+                )
+            }
+
+            VIEW_TYPE_IMAGE -> {
+                PostImageViewHolder(
+                    LayoutInflater
+                        .from(parent.context)
+                        .inflate(R.layout.fragment_video, parent, false)
+                )
+            }
+            else -> {
+                throw Exception("This type of content is not supported yet..!")
+            }
+        }
     }
 
-    val viewHolderList: MutableList<PostViewHolder> = mutableListOf()
+    val videoViewHolderList: MutableList<RecyclerView.ViewHolder> = mutableListOf()
 
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.apply {
-            viewHolderList.add(this)
-            imageView.loadThumbNail("https://wallpapercave.com/wp/wp1817745.jpg")
-            myPosition = position
-            setData(model.viewPagerData[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
+        holder.runWhenVideo {
+            videoViewHolderList.add(it)
+            it.imageView.loadThumbNail("https://wallpapercave.com/wp/wp1817745.jpg")
+            it.myPosition = position
+            it.setData(model.viewPagerData[position])
+        }
+
+        holder.runWhenImage {
+
+        }
+
+    }
+
+
+
+    override fun getItemViewType(position: Int): Int {
+        return when (model.viewPagerData[position].dataType) {
+            DataType.IMAGE -> {
+                VIEW_TYPE_IMAGE
+            }
+            DataType.VIDEO -> {
+                VIEW_TYPE_VIDEO
+            }
         }
     }
 
@@ -38,32 +79,46 @@ class ViewPager2Adapter(
         return model.viewPagerData.size
     }
 
-    lateinit var currentViewHolder: PostViewHolder
+    lateinit var currentVideoViewHolder: RecyclerView.ViewHolder
 
     fun pauseAllOperations() {
-        currentViewHolder.imageView.beVisible()
-        currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
+        currentVideoViewHolder.runWhenVideo {
+            it.imageView.beVisible()
+            it.action(ExtensionInfo(SelectiveAction.ATTACHED_LOST))
+        }
+        currentVideoViewHolder.runWhenImage {
+
+        }
     }
 
     fun resumeAllOperation() {
-        currentViewHolder.imageView.beInvisible()
-        currentViewHolder.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
+        currentVideoViewHolder.runWhenVideo {
+            it.imageView.beInvisible()
+            it.action(ExtensionInfo(SelectiveAction.ATTACHED_WIN))
+        }
     }
 
     fun freeMemory() {
-        viewHolderList.forEach {
-            it.mySimpleExoPlayer.freeMemory()
+        videoViewHolderList.forEach { holder ->
+            holder.runWhenVideo {
+                it.mySimpleExoPlayer.freeMemory()
+            }
         }
     }
 
     fun initAndSeekToOne() {
-        viewHolderList.forEach {
-            it.mySimpleExoPlayer.allocateMemoryAndBeReady(it.vData)
+        videoViewHolderList.forEach { vh ->
+            vh.runWhenVideo {
+                it.mySimpleExoPlayer.allocateMemoryAndBeReady(it.vData)
+            }
+            vh.runWhenImage {
+
+            }
         }
     }
 
-    class PostViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
-        lateinit var vData: RecyclerViewStateModel.SubViewHolderData
+    class PostVideoViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
+        lateinit var vData: SubViewHolderData
         override fun action(extensionInfo: ExtensionInfo) {
             when (extensionInfo.action) {
 
@@ -94,7 +149,7 @@ class ViewPager2Adapter(
             }
         }
 
-        fun setData(data: RecyclerViewStateModel.SubViewHolderData) {
+        fun setData(data: SubViewHolderData) {
             vData = data
             mySimpleExoPlayer.play(vData)
         }
@@ -104,10 +159,63 @@ class ViewPager2Adapter(
         val imageView: ImageView = v.findViewById(R.id.thumbNail)
         val mySimpleExoPlayer: MySimpleExoPlayer = v.findViewById(R.id.mySimpleExoPlayer)
     }
+
+    class PostImageViewHolder(v: View) : RecyclerView.ViewHolder(v), ViewHolderExtension {
+
+        lateinit var iData: SubViewHolderData
+
+        override fun action(extensionInfo: ExtensionInfo) {
+            when (extensionInfo.action) {
+
+                SelectiveAction.NONE -> {
+
+                }
+
+                SelectiveAction.ATTACHED_WIN -> {
+
+                }
+
+                SelectiveAction.ATTACHED_LOST -> {
+
+                }
+
+                SelectiveAction.ATTACHED_CANDIDATE -> {
+
+                }
+
+                SelectiveAction.DETACHED -> {
+
+                }
+            }
+        }
+
+        fun setData(data: SubViewHolderData) {
+
+        }
+
+
+    }
+
+    private fun RecyclerView.ViewHolder.runWhenVideo(callback: (PostVideoViewHolder) -> Unit) {
+        if (this is PostVideoViewHolder) {
+            callback(this)
+        }
+    }
+
+    private fun RecyclerView.ViewHolder.runWhenImage(callback: (PostImageViewHolder) -> Unit) {
+        if (this is PostImageViewHolder) {
+            callback(this)
+        }
+    }
+
+    companion object {
+        private const val VIEW_TYPE_IMAGE: Int = 1
+        private const val VIEW_TYPE_VIDEO: Int = 2
+    }
 }
 
 fun ImageView.loadThumbNail(string: String) {
-    Glide.with(RecyclerViewStateModel.applicationContext).load("empty")
-        .thumbnail(Glide.with(RecyclerViewStateModel.applicationContext).load(string))
+    Glide.with(this).load("empty")
+        .thumbnail(Glide.with(this).load(string))
         .into(this);
 }

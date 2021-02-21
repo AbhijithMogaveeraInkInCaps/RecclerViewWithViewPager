@@ -98,21 +98,22 @@ class RecyclerViewPostContainer : RecyclerView {
         isScrolled = true
     }
 
-    var lastScrollFocus: Int = -1
+    private var lastScrollFocus: Int = -1
 
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
 
+        val linearLayoutManager = layoutManager as LinearLayoutManager
         val visibleItemPosition: Int = if (!isScrolledDown) {
-            if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
-                (layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+            if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
+                linearLayoutManager.findLastVisibleItemPosition()
             else
-                (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                linearLayoutManager.findLastCompletelyVisibleItemPosition()
         } else {
-            if ((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
-                (layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == -1 && state == SCROLL_STATE_IDLE)
+                linearLayoutManager.findFirstVisibleItemPosition()
             else
-                (layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                linearLayoutManager.findLastCompletelyVisibleItemPosition()
         }
 
         if (visibleItemPosition != -1)

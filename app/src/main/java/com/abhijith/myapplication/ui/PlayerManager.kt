@@ -1,10 +1,8 @@
 package com.abhijith.myapplication.ui
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.abhijith.myapplication.ui.statemodel.RecyclerViewStateModel
+import com.abhijith.myapplication.ui.data.SubViewHolderData
 import com.abhijith.myapplication.ui.view.MySimpleExoPlayer
-import java.util.*
 
 enum class PlayerManagerEvent {
     NEW_PLAYER
@@ -13,10 +11,10 @@ enum class PlayerManagerEvent {
 object PlayerManager {
 
     var currentMySimpleExoPlayer: MySimpleExoPlayer? = null
-    var currentMySimpleExoPlayerOwnerData: RecyclerViewStateModel.SubViewHolderData? = null
+    var currentMySimpleExoPlayerOwnerData: SubViewHolderData? = null
     val liveData: MutableLiveData<PlayerManagerEvent> = MutableLiveData()
 
-    fun pauseOther(owner: RecyclerViewStateModel.SubViewHolderData,player: MySimpleExoPlayer) {
+    fun pauseOther(owner: SubViewHolderData, player: MySimpleExoPlayer) {
         synchronized(this) {
             currentMySimpleExoPlayer?.pause(currentMySimpleExoPlayerOwnerData!!)
             currentMySimpleExoPlayer = player
